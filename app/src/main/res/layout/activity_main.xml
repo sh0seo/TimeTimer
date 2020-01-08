@@ -15,7 +15,7 @@
         app:fgColor="#e5e5e5"
         app:percent="40"
         app:startAngle="0"
-        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +27,7 @@
         seekcircle:min="0"
         seekcircle:max="60"
         seekcircle:progress="20"
-        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,12 +36,21 @@
     <ImageView
         android:layout_width="0dp"
         android:layout_height="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/avd_play_pause2" />
     <!--        app:animateOnClick="@{@drawable/avd_pause_play2}" />-->
+
+    <TextView
+        android:id="@+id/menu_box"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
+        android:background="@drawable/border">
+
+    </TextView>
 
     <!-- admob -->
     <com.google.android.gms.ads.AdView
