@@ -23,6 +23,7 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import io.animal.mouse.settings.SettingsActivity;
+import io.animal.mouse.views.PlayPauseView;
 import io.animal.mouse.views.ProgressPieView;
 import io.animal.mouse.views.SeekCircle;
 
@@ -63,53 +64,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        // start & stop controller
-        AppCompatImageView controller = findViewById(R.id.controller);
-        controller.setOnClickListener(new View.OnClickListener() {
+        final PlayPauseView view = findViewById(R.id.play_pause_view);
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AppCompatImageView imageView = (AppCompatImageView) v;
-                Drawable drawable = imageView.getDrawable();
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (drawable instanceof AnimatedVectorDrawable) {
-                        AnimatedVectorDrawable animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
-                        animatedVectorDrawable.registerAnimationCallback(new Animatable2.AnimationCallback() {
-                            @Override
-                            public void onAnimationEnd(Drawable drawable) {
-                                super.onAnimationEnd(drawable);
-                                if (status == 1) {
-                                    imageView.setImageResource(R.drawable.avd_pause_play2);
-                                    status = 0;
-                                }
-                            }
-                        });
-                        status = 1;
-                        animatedVectorDrawable.start();
-                    }
-                } else {
-                    if (drawable instanceof AnimatedVectorDrawableCompat) {
-                        AnimatedVectorDrawableCompat animatedVectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
-                        animatedVectorDrawableCompat.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
-                            @Override
-                            public void onAnimationEnd(Drawable drawable) {
-                                super.onAnimationEnd(drawable);
-                                if (status == 1) {
-                                    imageView.setImageResource(R.drawable.avd_pause_play2);
-                                    status = 0;
-                                }
-                            }
-                        });
-//                        status = 1;
-                        animatedVectorDrawableCompat.start();
-                    }
-                }
+                view.toggle();
             }
         });
+
+        // start & stop controller
+//        AppCompatImageView controller = findViewById(R.id.controller);
+//        controller.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final AppCompatImageView imageView = (AppCompatImageView) v;
+//                Drawable drawable = imageView.getDrawable();
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    if (drawable instanceof AnimatedVectorDrawable) {
+//                        AnimatedVectorDrawable animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
+//                        animatedVectorDrawable.registerAnimationCallback(new Animatable2.AnimationCallback() {
+//                            @Override
+//                            public void onAnimationEnd(Drawable drawable) {
+//                                super.onAnimationEnd(drawable);
+//                                if (status == 1) {
+//                                    imageView.setImageResource(R.drawable.avd_pause_play2);
+//                                    status = 0;
+//                                }
+//                            }
+//                        });
+//                        status = 1;
+//                        animatedVectorDrawable.start();
+//                    }
+//                } else {
+//                    if (drawable instanceof AnimatedVectorDrawableCompat) {
+//                        AnimatedVectorDrawableCompat animatedVectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
+//                        animatedVectorDrawableCompat.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+//                            @Override
+//                            public void onAnimationEnd(Drawable drawable) {
+//                                super.onAnimationEnd(drawable);
+//                                if (status == 1) {
+//                                    imageView.setImageResource(R.drawable.avd_pause_play2);
+//                                    status = 0;
+//                                }
+//                            }
+//                        });
+////                        status = 1;
+//                        animatedVectorDrawableCompat.start();
+//                    }
+//                }
+//            }
+//        });
     }
 
-    private int status = 0;
+//    private int status = 0;
 
     /**
      * AdMob 초기화.
