@@ -33,15 +33,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Play & Pause Button -->
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/controller"
         android:layout_width="0dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/avd_play_pause2" />
-    <!--        app:animateOnClick="@{@drawable/avd_pause_play2}" />-->
+        app:srcCompat="@drawable/avd_pause_play2" />
 
     <TextView
         android:id="@+id/menu_box"

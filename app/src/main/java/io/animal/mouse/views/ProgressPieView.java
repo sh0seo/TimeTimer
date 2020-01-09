@@ -32,7 +32,7 @@ public class ProgressPieView extends View {
 
         try {
             bgColor = a.getColor(R.styleable.SectorProgressView_bgColor, 0xffe5e5e5);
-            fgColor = a.getColor(R.styleable.SectorProgressView_fgColor, 0xffff765c);
+            fgColor = a.getColor(R.styleable.SectorProgressView_fgColor, 0xfff44336);
             percent = a.getFloat(R.styleable.SectorProgressView_percent, 0);
             startAngle = a.getFloat(R.styleable.SectorProgressView_startAngle, 0) + 270;
         } finally {
@@ -90,7 +90,6 @@ public class ProgressPieView extends View {
         fgPaint.setColor(fgColor);
         refreshTheLayout();
     }
-
 
     private void refreshTheLayout() {
         invalidate();
