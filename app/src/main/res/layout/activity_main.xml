@@ -7,19 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <io.animal.mouse.views.ProgressPieView
-        android:id="@+id/my_progress"
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        app:bgColor="#ff7652"
-        app:fgColor="#e5e5e5"
-        app:percent="25"
-        app:startAngle="0"
-        app:layout_constraintBottom_toTopOf="@+id/menu_box"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    <!-- time -->
     <io.animal.mouse.views.SeekCircle
         android:id="@+id/my_seekbar"
         android:layout_width="300dp"
@@ -27,6 +15,20 @@
         seekcircle:min="0"
         seekcircle:max="60"
         seekcircle:progress="15"
+        app:layout_constraintBottom_toTopOf="@+id/menu_box"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Red Pie -->
+    <io.animal.mouse.views.ProgressPieView
+        android:id="@+id/my_progress"
+        android:layout_width="270dp"
+        android:layout_height="270dp"
+        app:bgColor="@color/red_timer"
+        app:fgColor="@android:color/white"
+        app:percent="25"
+        app:startAngle="0"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -45,15 +47,15 @@
 
     <io.animal.mouse.views.PlayPauseView
         android:id="@+id/play_pause_view"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_centerInParent="true"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:clickable="true"
-        android:foreground="?android:selectableItemBackground"
+        android:foreground="@android:color/transparent"
         android:stateListAnimator="@animator/button_elevation"/>
 
     <TextView
