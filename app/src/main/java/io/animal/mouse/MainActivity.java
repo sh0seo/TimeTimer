@@ -3,6 +3,9 @@ package io.animal.mouse;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -60,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
             public void onAdClosed() {
                 // Code to be executed when the user is about to return
                 // to the app after tapping on an ad.
+            }
+        });
+
+        ImageView menu = findViewById(R.id.more_menu);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "menu button", Toast.LENGTH_SHORT).show();
             }
         });
     }

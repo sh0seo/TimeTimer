@@ -46,11 +46,21 @@
     <TextView
         android:id="@+id/menu_box"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="55dp"
         app:layout_constraintBottom_toTopOf="@+id/adView"
-        android:background="@drawable/border">
+        android:background="@drawable/border" />
 
-    </TextView>
+    <ImageButton
+        android:id="@+id/more_menu"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:srcCompat="@drawable/ic_more_vert_24px"
+        app:layout_constraintBottom_toBottomOf="@+id/menu_box"
+        app:layout_constraintRight_toRightOf="@+id/menu_box"
+        app:layout_constraintTop_toTopOf="@+id/menu_box"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginRight="15dp"
+        />
 
     <!-- admob -->
     <com.google.android.gms.ads.AdView
