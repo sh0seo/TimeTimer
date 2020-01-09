@@ -7,26 +7,26 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <io.animal.mouse.ProgressPieView
+    <io.animal.mouse.views.ProgressPieView
         android:id="@+id/my_progress"
         android:layout_width="260dp"
         android:layout_height="260dp"
         app:bgColor="#ff7652"
         app:fgColor="#e5e5e5"
-        app:percent="40"
+        app:percent="25"
         app:startAngle="0"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <io.animal.mouse.SeekCircle
+    <io.animal.mouse.views.SeekCircle
         android:id="@+id/my_seekbar"
         android:layout_width="300dp"
         android:layout_height="300dp"
         seekcircle:min="0"
         seekcircle:max="60"
-        seekcircle:progress="20"
+        seekcircle:progress="15"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -59,8 +59,7 @@
         app:layout_constraintRight_toRightOf="@+id/menu_box"
         app:layout_constraintTop_toTopOf="@+id/menu_box"
         android:background="?attr/selectableItemBackground"
-        android:layout_marginRight="15dp"
-        />
+        android:layout_marginRight="15dp" />
 
     <!-- admob -->
     <com.google.android.gms.ads.AdView

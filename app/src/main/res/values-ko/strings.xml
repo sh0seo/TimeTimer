@@ -4,5 +4,5 @@
     <string name="banner_ad_unit_id">ca-app-pub-2571675041295621/1548992372</string>
     <string name="banner_ad_unit_id_for_test">ca-app-pub-3940256099942544/6300978111</string>
 
-    <string name="setting_name">Setting</string>
+    <string name="setting_name">설정</string>
 </resources>

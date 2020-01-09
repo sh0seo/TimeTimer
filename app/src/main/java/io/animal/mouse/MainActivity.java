@@ -2,6 +2,7 @@ package io.animal.mouse;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +15,10 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
+import io.animal.mouse.settings.SettingsActivity;
+import io.animal.mouse.views.ProgressPieView;
+import io.animal.mouse.views.SeekCircle;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -21,6 +26,41 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initializeAdMob();
+
+        final ProgressPieView progressView = findViewById(R.id.my_progress);
+
+        SeekCircle seeker = findViewById(R.id.my_seekbar);
+        seeker.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
+            @Override
+            public void onProgressChanged(SeekCircle seekCircle, int progress, boolean fromUser) {
+                progressView.setPercent(seekCircle.getProgress() + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekCircle seekCircle) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekCircle seekCircle) {
+            }
+        });
+
+        // show setting activity.
+        ImageView menu = findViewById(R.id.more_menu);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    /**
+     * AdMob 초기화.
+     */
+    private void initializeAdMob() {
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
@@ -65,14 +105,5 @@ public class MainActivity extends AppCompatActivity {
                 // to the app after tapping on an ad.
             }
         });
-
-        ImageView menu = findViewById(R.id.more_menu);
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "menu button", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
-
 }
