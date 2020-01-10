@@ -5,4 +5,5 @@
     <dimen name="pause_bar_distance">8dp</dimen>
     <dimen name="pause_bar_height">30dp</dimen>
 
+    <dimen name="time_hour">25sp</dimen>
 </resources>

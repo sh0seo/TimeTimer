@@ -5,4 +5,18 @@
     <string name="banner_ad_unit_id_for_test">ca-app-pub-3940256099942544/6300978111</string>
 
     <string name="setting_name">설정</string>
+    <string name="display_title">화면켜짐</string>
+    <string name="display_etc">타이머가 지속되는 동안 화면 켜놓기</string>
+    <string name="alarm_title">알람 설정</string>
+    <string name="alarm_type_title">알림음</string>
+    <string name="alarm_volume_title">알림음 크기</string>
+    <string name="vibration_title">진동</string>
+    <string name="etc_title">기타</string>
+    <string name="open_source_title">오픈소스 라이선스</string>
+
+    <string name="display">display</string>
+    <string name="ringtone">ringtone</string>
+    <string name="ringtone_volume">ringtone_volume</string>
+    <string name="vibration">vibration</string>
+    <string name="open_sources">open_sources</string>
 </resources>

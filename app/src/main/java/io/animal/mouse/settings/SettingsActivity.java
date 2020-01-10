@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import io.animal.mouse.R;
-import io.animal.mouse.settings.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override

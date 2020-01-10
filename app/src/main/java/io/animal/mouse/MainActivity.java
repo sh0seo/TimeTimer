@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final PlayPauseView view = findViewById(R.id.play_pause_view);
+        view.toggle();
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

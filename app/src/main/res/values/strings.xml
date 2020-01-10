@@ -5,4 +5,18 @@
     <string name="banner_ad_unit_id_for_test">ca-app-pub-3940256099942544/6300978111</string>
 
     <string name="setting_name">Setting</string>
+    <string name="display_title">Keep Screen On</string>
+    <string name="display_etc">Will keep the display on while the Timer in running</string>
+    <string name="alarm_title">Alarm Settings</string>
+    <string name="alarm_type_title">Ringtone</string>
+    <string name="alarm_volume_title">Ringtone Volume</string>
+    <string name="vibration_title">Vibration</string>
+    <string name="etc_title">Other</string>
+    <string name="open_source_title">Open source licenses</string>
+
+    <string name="display">display</string>
+    <string name="ringtone">ringtone</string>
+    <string name="ringtone_volume">ringtone_volume</string>
+    <string name="vibration">vibration</string>
+    <string name="open_sources">open_sources</string>
 </resources>

@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        app:key="display"
+        app:icon="@drawable/ic_brightness_24px"
+        app:title="@string/display_title"
+        app:summary="@string/display_etc" />
 
-    <SwitchPreferenceCompat
-        app:key="notifications"
-        app:title="Enable message notifications"/>
+    <PreferenceCategory
+        app:title="@string/alarm_title"
+        app:iconSpaceReserved="false">
 
-    <Preference
-        app:key="feedback"
-        app:title="Send feedback"
-        app:summary="Report technical issues or suggest new features"/>
+        <Preference
+            app:key="ringtone"
+            app:title="@string/alarm_type_title"
+            app:icon="@drawable/ic_alarm_active_24px"
+            app:summary="@string/alarm_type_title"/>
+
+        <SeekBarPreference
+            app:key="ringtone_volume"
+            app:icon="@drawable/ic_volume_up_24px"
+            app:title="@string/alarm_volume_title"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            app:key="vibration"
+            app:icon="@drawable/ic_vibration_24px"
+            app:title="@string/vibration_title"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/etc_title"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            app:key="open_sources"
+            app:title="@string/open_source_title"
+            app:icon="@drawable/ic_public_24px" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
