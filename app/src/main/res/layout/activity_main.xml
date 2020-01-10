@@ -84,7 +84,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="35"
+        android:text="40"
         style="@style/minutes_watch_30"
         android:textFontWeight="900"
         app:layout_constraintTop_toTopOf="@+id/rotation_30"
@@ -233,6 +233,13 @@
         app:layout_constraintTop_toTopOf="@+id/menu_box"
         android:background="?attr/selectableItemBackground"
         android:layout_marginRight="15dp" />
+
+    <Chronometer
+        android:id="@+id/stop_watch"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="0:0"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <!-- admob -->
     <com.google.android.gms.ads.AdView

@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeAdMob();
+
 
         final ProgressPieView progressView = findViewById(R.id.my_progress);
 
@@ -64,15 +66,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        // temp imple stopwatch
+        final Chronometer stopWatch = findViewById(R.id.stop_watch);
+        stopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                progressView.setPercent(progressView.getPercent() + 1);
+            }
+        });
+
         final PlayPauseView view = findViewById(R.id.play_pause_view);
         view.toggle();
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                stopWatch.setBase(45);
+//                stopWatch.setCountDown(true);
+                stopWatch.start();
                 view.toggle();
             }
         });
+
 
         // start & stop controller
 //        AppCompatImageView controller = findViewById(R.id.controller);
