@@ -8,11 +8,21 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- alarm & vibration -->
+    <ImageButton
+        android:id="@+id/alarm_vibration"
+        android:src="@drawable/ic_notifications_24px"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@+id/rotation_0"
+        app:layout_constraintRight_toRightOf="@+id/rotation_0" />
+
     <!-- 시계의 0min, 45min, 30min, 15min start -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rotation_0"
-        android:layout_width="360dp"
-        android:layout_height="360dp"
+        android:layout_width="@dimen/watch_width"
+        android:layout_height="@dimen/watch_height"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -63,8 +73,8 @@
     <!-- 시계의 55min, 40min, 25min, 10min start -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rotation_30"
-        android:layout_width="360dp"
-        android:layout_height="360dp"
+        android:layout_width="@dimen/watch_width"
+        android:layout_height="@dimen/watch_height"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -116,8 +126,8 @@
     <!-- 시계의 50min, 35min, 20min, 5min start -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rotation_60"
-        android:layout_width="360dp"
-        android:layout_height="360dp"
+        android:layout_width="@dimen/watch_width"
+        android:layout_height="@dimen/watch_height"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -169,8 +179,8 @@
     <!-- time -->
     <io.animal.mouse.views.SeekCircle
         android:id="@+id/my_seekbar"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/seeker_height"
+        android:layout_height="@dimen/seeker_height"
         seekcircle:min="0"
         seekcircle:max="60"
         seekcircle:progress="15"
@@ -182,8 +192,8 @@
     <!-- Red Pie -->
     <io.animal.mouse.views.ProgressPieView
         android:id="@+id/my_progress"
-        android:layout_width="270dp"
-        android:layout_height="270dp"
+        android:layout_width="@dimen/progress_height"
+        android:layout_height="@dimen/progress_height"
         app:bgColor="@color/red_timer"
         app:fgColor="@android:color/white"
         app:percent="25"
@@ -206,8 +216,8 @@
 
     <io.animal.mouse.views.PlayPauseView
         android:id="@+id/play_pause_view"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/pause_round_width"
+        android:layout_height="@dimen/pause_round_height"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -236,10 +246,13 @@
 
     <Chronometer
         android:id="@+id/stop_watch"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="0:0"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:countDown="true"
+        style="@style/mini_watch"
+        app:layout_constraintTop_toBottomOf="@+id/rotation_0"
+        app:layout_constraintRight_toRightOf="@+id/rotation_0" />
 
     <!-- admob -->
     <com.google.android.gms.ads.AdView

@@ -5,7 +5,9 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,12 +32,24 @@ import io.animal.mouse.views.SeekCircle;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SharedPreferences pref;
+
+    private ImageView alarmVibration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+
+        // get resources
+        initialize();
+
         initializeAdMob();
+
+        initializeAlarmVibration();
+
 
 
         final ProgressPieView progressView = findViewById(R.id.my_progress);
@@ -133,9 +147,47 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
+
     }
 
-//    private int status = 0;
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
+
+
+    private void initialize() {
+        alarmVibration = findViewById(R.id.alarm_vibration);
+    }
+
+    /**
+     * Alarm & Vibration Button
+     */
+    private void initializeAlarmVibration() {
+        boolean isAlarm = pref.getBoolean("alarm", true);
+        if (isAlarm) {
+            alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
+        } else {
+            alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
+        }
+
+        alarmVibration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isAlarm = pref.getBoolean("alarm", true);
+                if (isAlarm) {
+                    alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
+                } else {
+                    alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
+                }
+
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("alarm", !isAlarm);
+                editor.commit();
+            }
+        });
+    }
 
     /**
      * AdMob 초기화.

@@ -42,4 +42,12 @@
         <item name="android:rotation">-60</item>
     </style>
 
+    <!-- mini watch -->
+    <style name="mini_watch">
+        <item name="android:fontFamily">san-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/mini_time</item>
+        <item name="android:textColor">@color/red_timer</item>
+    </style>
+
 </resources>
