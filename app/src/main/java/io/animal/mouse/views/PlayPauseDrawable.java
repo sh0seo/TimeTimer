@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -46,8 +45,8 @@ public class PlayPauseDrawable extends Drawable {
     private float mWidth;
     private float mHeight;
 
-    private float mProgress;
-    private boolean mIsPlay;
+    private float mProgress = 1;
+    private boolean mIsPlay = true;
 
     public PlayPauseDrawable(Context context) {
         final Resources res = context.getResources();
