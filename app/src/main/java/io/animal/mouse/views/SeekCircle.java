@@ -96,10 +96,9 @@ public class SeekCircle extends ProgressCircle {
         float x = event.getX() - mCenterX;
         float y = mCenterY - event.getY();
 
-        float distance = (float) Math.sqrt(x * x + y * y);
-
-        boolean inRange = Math.abs(distance - mRadius) <= mSectionHeight;
-
+//        float distance = (float) Math.sqrt(x * x + y * y);
+//        boolean inRange = Math.abs(distance - mRadius) <= mSectionHeight;
+        boolean inRange = true;
         boolean updateProgress = false;
 
         switch (event.getAction()) {
