@@ -142,10 +142,11 @@ public class SeekCircle extends ProgressCircle {
                 float absPosition = (float) mRevolutions + position;
 
                 // Clamp progress
-                if (absPosition < 0.0f)
+                if (absPosition < 0.0f) {
                     relativeProgress = 0;
-                else if (absPosition > 1.0f)
+                } else if (absPosition > 1.0f) {
                     relativeProgress = relativeMax;
+                }
             }
 
             mOldX = x;
@@ -174,10 +175,11 @@ public class SeekCircle extends ProgressCircle {
         boolean leftFlip = y > 0.0f && mOldX >= 0.0f && x < 0.0f;
         boolean rightFlip = y > 0.0f && mOldX <= 0.0f && x > 0.0f;
 
-        if (leftFlip)
+        if (leftFlip) {
             mRevolutions -= 1.0f;
-        else if (rightFlip)
+        } else if (rightFlip) {
             mRevolutions += 1.0f;
+        }
 
         // Clamp windings to [-1, 1]
         mRevolutions = Math.max(-1, Math.min(1, mRevolutions));
@@ -188,8 +190,9 @@ public class SeekCircle extends ProgressCircle {
         boolean result = super.updateProgress(progress);
         if (result) {
             // Reset position to match
-            if (mOnSeekCircleChangeListener != null)
+            if (mOnSeekCircleChangeListener != null) {
                 mOnSeekCircleChangeListener.onProgressChanged(this, progress, false);
+            }
         }
 
         return result;
@@ -198,8 +201,9 @@ public class SeekCircle extends ProgressCircle {
     private void updateTouchProgress(int progress) {
         boolean result = super.updateProgress(progress);
         if (result) {
-            if (mOnSeekCircleChangeListener != null)
+            if (mOnSeekCircleChangeListener != null) {
                 mOnSeekCircleChangeListener.onProgressChanged(this, progress, true);
+            }
         }
     }
 }

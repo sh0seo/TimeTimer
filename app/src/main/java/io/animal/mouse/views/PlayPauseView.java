@@ -21,8 +21,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
-import io.animal.mouse.R;
-
 public class PlayPauseView extends FrameLayout {
 
     private static final Property<PlayPauseView, Integer> COLOR =

@@ -11,9 +11,9 @@
     <!-- alarm & vibration -->
     <ImageButton
         android:id="@+id/alarm_vibration"
-        android:src="@drawable/ic_notifications_24px"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        app:srcCompat="@drawable/ic_notifications_24px"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="?attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@+id/rotation_0"
         app:layout_constraintRight_toRightOf="@+id/rotation_0" />
@@ -182,8 +182,8 @@
         android:layout_width="@dimen/seeker_height"
         android:layout_height="@dimen/seeker_height"
         seekcircle:min="0"
-        seekcircle:max="60"
-        seekcircle:progress="15"
+        seekcircle:max="3600"
+        seekcircle:progress="900"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -222,7 +222,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:clickable="true"
         android:foreground="@android:color/transparent"
         android:stateListAnimator="@animator/button_elevation"/>
 
@@ -248,7 +247,7 @@
         android:id="@+id/stop_watch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
+        android:format="%s"
         android:countDown="true"
         style="@style/mini_watch"
         app:layout_constraintTop_toBottomOf="@+id/rotation_0"

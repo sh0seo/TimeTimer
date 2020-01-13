@@ -27,9 +27,9 @@ public class ProgressCircle extends View {
     protected float mCenterY;
 
     private Paint mPaint = new Paint();
-    private int mColor1 = Color.parseColor("#ff33b5e5");
+//    private int mColor1 = Color.parseColor("#ff33b5e5");
     private int mColor = Color.parseColor("#ff404040");
-    private int mInactiveColor = Color.parseColor("#ff404040");
+//    private int mInactiveColor = Color.parseColor("#ff404040");
 
     {
         mPaint.setAntiAlias(true);
@@ -67,9 +67,9 @@ public class ProgressCircle extends View {
             int progress = attributes.getInteger(R.styleable.SeekCircle_progress, 0);
             mProgress = Math.max(Math.min(progress, mMaxProgress), 0);
 
-            mColor1 = attributes.getColor(R.styleable.SeekCircle_startColor, Color.parseColor("#ff33b5e5"));
+//            mColor1 = attributes.getColor(R.styleable.SeekCircle_startColor, Color.parseColor("#ff33b5e5"));
             mColor = attributes.getColor(R.styleable.SeekCircle_endColor, Color.parseColor("#ff404040"));
-            mInactiveColor = attributes.getColor(R.styleable.SeekCircle_inactiveColor, Color.parseColor("#ff404040"));
+//            mInactiveColor = attributes.getColor(R.styleable.SeekCircle_inactiveColor, Color.parseColor("#ff404040"));
 
             mRingBias = attributes.getFloat(R.styleable.SeekCircle_ringBias, 0.15f);
             mSectionRatio = attributes.getFloat(R.styleable.SeekCircle_sectionRatio, 5.0f);
@@ -100,10 +100,11 @@ public class ProgressCircle extends View {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (width > height)
+        if (width > height) {
             super.onMeasure(heightMeasureSpec, widthMeasureSpec);
-        else
+        } else {
             super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        }
 
         updateDimensions(getWidth(), getHeight());
     }
@@ -123,11 +124,13 @@ public class ProgressCircle extends View {
         int relativeProgress = mProgress - mMinProgress;
         int relativeMax = mMaxProgress - mMinProgress;
         float rotation = 360.0f / (float) relativeMax;
+
         for (int i = 0; i < relativeMax; ++i) {
             canvas.save();
 
-            canvas.rotate((float) i * rotation);
-            canvas.translate(0, -mRadius);
+            if (i == 0 ||  i % 60 == 0) {
+                canvas.rotate((float) i * rotation);
+                canvas.translate(0, -mRadius);
 
 //            if (i % 5 == 0) {
 ////                float bias = (float) i / (float) (relativeMax - 1);
@@ -139,44 +142,45 @@ public class ProgressCircle extends View {
 //            }
 
 //            if (i < relativeProgress) {
-            if (i % 5 == 0) {
-                float bias = (float) i / (float) (relativeMax - 1);
-                int color = interpolateColor(mColor1, mColor, bias);
-                mPaint.setColor(color);
-                canvas.scale(0.7f, 0.7f);
-            } else {
-                canvas.scale(0.3f, 0.3f);
-                mPaint.setColor(mInactiveColor);
-            }
+                if (i % 360 == 0) {
+                    float bias = (float) i / (float) (relativeMax - 1);
+//                    int color = interpolateColor(mColor1, mColor, bias);
+                    mPaint.setColor(mColor);
+                    canvas.scale(0.7f, 0.7f);
+                } else {
+                    canvas.scale(0.3f, 0.3f);
+                    mPaint.setColor(mColor);
+                }
 
-            canvas.drawRect(mSectionRect, mPaint);
-            canvas.restore();
+                canvas.drawRect(mSectionRect, mPaint);
+                canvas.restore();
+            }
         }
 
         super.onDraw(canvas);
     }
 
-    private float interpolate(float a, float b, float bias) {
-        return (a + ((b - a) * bias));
-    }
+//    private float interpolate(float a, float b, float bias) {
+//        return (a + ((b - a) * bias));
+//    }
 
-    private int interpolateColor(int colorA, int colorB, float bias) {
-        float[] hsvColorA = new float[3];
-        Color.colorToHSV(colorA, hsvColorA);
-
-        float[] hsvColorB = new float[3];
-        Color.colorToHSV(colorB, hsvColorB);
-
-        hsvColorB[0] = interpolate(hsvColorA[0], hsvColorB[0], bias);
-        hsvColorB[1] = interpolate(hsvColorA[1], hsvColorB[1], bias);
-        hsvColorB[2] = interpolate(hsvColorA[2], hsvColorB[2], bias);
-
-        // NOTE For some reason the method HSVToColor fail in edit mode. Just use the start color for now
-        if (isInEditMode())
-            return colorA;
-
-        return Color.HSVToColor(hsvColorB);
-    }
+//    private int interpolateColor(int colorA, int colorB, float bias) {
+//        float[] hsvColorA = new float[3];
+//        Color.colorToHSV(colorA, hsvColorA);
+//
+//        float[] hsvColorB = new float[3];
+//        Color.colorToHSV(colorB, hsvColorB);
+//
+//        hsvColorB[0] = interpolate(hsvColorA[0], hsvColorB[0], bias);
+//        hsvColorB[1] = interpolate(hsvColorA[1], hsvColorB[1], bias);
+//        hsvColorB[2] = interpolate(hsvColorA[2], hsvColorB[2], bias);
+//
+//        // NOTE For some reason the method HSVToColor fail in edit mode. Just use the start color for now
+//        if (isInEditMode())
+//            return colorA;
+//
+//        return Color.HSVToColor(hsvColorB);
+//    }
 
     /**
      * Get min progress
@@ -194,8 +198,9 @@ public class ProgressCircle extends View {
      */
     public void setMin(int min) {
         int newMin = Math.max(0, min);
-        if (newMin != mMinProgress)
+        if (newMin != mMinProgress) {
             mMinProgress = newMin;
+        }
 
         updateProgress(mProgress);
         invalidate();
@@ -217,8 +222,9 @@ public class ProgressCircle extends View {
      */
     public void setMax(int max) {
         int newMax = Math.max(max, 1);
-        if (newMax != mMaxProgress)
+        if (newMax != mMaxProgress) {
             mMaxProgress = newMax;
+        }
 
         updateProgress(mProgress);
         invalidate();

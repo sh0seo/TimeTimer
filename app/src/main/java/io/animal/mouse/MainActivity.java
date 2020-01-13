@@ -1,18 +1,13 @@
 package io.animal.mouse;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Animatable2;
-import android.graphics.drawable.AnimatedVectorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -32,9 +27,17 @@ import io.animal.mouse.views.SeekCircle;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     private SharedPreferences pref;
 
     private ImageView alarmVibration;
+
+    private ProgressPieView stopWatchPie;
+    private SeekCircle stopWatch;
+    private PlayPauseView playPauseController;
+
+    private Chronometer miniStopWatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +53,18 @@ public class MainActivity extends AppCompatActivity {
 
         initializeAlarmVibration();
 
+        initializeSettingMenu();
 
+        stopWatchPie = findViewById(R.id.my_progress);
 
-        final ProgressPieView progressView = findViewById(R.id.my_progress);
-
-        SeekCircle seeker = findViewById(R.id.my_seekbar);
-        seeker.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
+        stopWatch = findViewById(R.id.my_seekbar);
+        stopWatch.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
             @Override
             public void onProgressChanged(SeekCircle seekCircle, int progress, boolean fromUser) {
-                progressView.setPercent(seekCircle.getProgress() + progress);
+                float temp = progress * 100 / 3600;
+                Log.d(TAG,"[onProgressChanged]" + progress + ": " + temp);
+
+                stopWatchPie.setPercent(temp);
             }
 
             @Override
@@ -70,36 +76,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // show setting activity.
-        ImageView menu = findViewById(R.id.more_menu);
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
         // temp imple stopwatch
-        final Chronometer stopWatch = findViewById(R.id.stop_watch);
-        stopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+        miniStopWatch = findViewById(R.id.stop_watch);
+        miniStopWatch.setText("45:00");
+        miniStopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                progressView.setPercent(progressView.getPercent() + 1);
+                stopWatchPie.setPercent(stopWatchPie.getPercent() + 1);
             }
         });
 
-        final PlayPauseView view = findViewById(R.id.play_pause_view);
-        view.toggle();
+        playPauseController = findViewById(R.id.play_pause_view);
+//        long startTime = pref.getLong("startTime", 0);
+//        if (startTime == 0) {
+////            playPauseController.toggle();
+//        }
 
-        view.setOnClickListener(new View.OnClickListener() {
+        playPauseController.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopWatch.setBase(45);
+                long startTime = SystemClock.elapsedRealtime() + 1000 * 60 * 45;
+
+                pref.edit().putLong("startTime", startTime).commit();
+
+                miniStopWatch.setBase(startTime);
 //                stopWatch.setCountDown(true);
-                stopWatch.start();
-                view.toggle();
+                miniStopWatch.start();
+                playPauseController.toggle();
             }
         });
 
@@ -235,6 +238,21 @@ public class MainActivity extends AppCompatActivity {
             public void onAdClosed() {
                 // Code to be executed when the user is about to return
                 // to the app after tapping on an ad.
+            }
+        });
+    }
+
+    /**
+     * Setting Activity.
+     */
+    private void initializeSettingMenu() {
+        // show setting activity.
+        ImageView menu = findViewById(R.id.more_menu);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
             }
         });
     }
