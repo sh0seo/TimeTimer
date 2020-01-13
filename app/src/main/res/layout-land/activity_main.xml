@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:seekcircle="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- alarm & vibration -->
+    <ImageButton
+        android:id="@+id/alarm_vibration"
+        app:srcCompat="@drawable/ic_notifications_24px"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/menu_box"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="30dp" />
+
+    <!-- 시계의 0min, 45min, 30min, 15min start -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rotation_0"
+        android:layout_width="@dimen/watch_width"
+        android:layout_height="@dimen/watch_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/menu_box"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            style="@style/minutes_watch"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_0"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
+            app:layout_constraintRight_toRightOf="@+id/rotation_0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="45"
+            style="@style/minutes_watch"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_0"
+            app:layout_constraintRight_toRightOf="@+id/rotation_0"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            style="@style/minutes_watch"
+            android:textFontWeight="900"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
+            app:layout_constraintRight_toRightOf="@+id/rotation_0"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15"
+            style="@style/minutes_watch"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_0"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- 시계의 0min, 45min, 30min, 15min end -->
+
+    <!-- 시계의 55min, 40min, 25min, 10min start -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rotation_30"
+        android:layout_width="@dimen/watch_width"
+        android:layout_height="@dimen/watch_height"
+        app:layout_constraintBottom_toBottomOf="@+id/rotation_0"
+        app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
+        app:layout_constraintRight_toRightOf="@+id/rotation_0"
+        app:layout_constraintTop_toTopOf="@+id/rotation_0"
+        android:rotation="30" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="55"
+            style="@style/minutes_watch_30"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_30"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_30"
+            app:layout_constraintRight_toRightOf="@+id/rotation_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="40"
+            style="@style/minutes_watch_30"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_30"
+            app:layout_constraintRight_toRightOf="@+id/rotation_30"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25"
+            style="@style/minutes_watch_30"
+            android:textFontWeight="900"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_30"
+            app:layout_constraintRight_toRightOf="@+id/rotation_30"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10"
+            style="@style/minutes_watch_30"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_30"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_30"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_30" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- 시계의 55min, 40min, 25min, 10min end -->
+
+    <!-- 시계의 50min, 35min, 20min, 5min start -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rotation_60"
+        android:layout_width="@dimen/watch_width"
+        android:layout_height="@dimen/watch_height"
+        app:layout_constraintBottom_toBottomOf="@+id/rotation_0"
+        app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
+        app:layout_constraintRight_toRightOf="@+id/rotation_0"
+        app:layout_constraintTop_toTopOf="@+id/rotation_0"
+        android:rotation="60" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50"
+            style="@style/minutes_watch_60"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_60"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
+            app:layout_constraintRight_toRightOf="@+id/rotation_60" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="35"
+            style="@style/minutes_watch_60"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_60"
+            app:layout_constraintRight_toRightOf="@+id/rotation_60"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_60" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20"
+            style="@style/minutes_watch_60"
+            android:textFontWeight="900"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
+            app:layout_constraintRight_toRightOf="@+id/rotation_60"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_60" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  5"
+            style="@style/minutes_watch_60"
+            android:textFontWeight="900"
+            app:layout_constraintTop_toTopOf="@+id/rotation_60"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_60" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- 시계의 50min, 35min, 20min, 5min end -->
+
+    <!-- time -->
+    <io.animal.mouse.views.SeekCircle
+        android:id="@+id/my_seekbar"
+        android:layout_width="@dimen/seeker_height"
+        android:layout_height="@dimen/seeker_height"
+        seekcircle:min="0"
+        seekcircle:max="3600"
+        seekcircle:progress="900"
+        app:layout_constraintTop_toTopOf="@+id/play_pause_view"
+        app:layout_constraintBottom_toBottomOf="@+id/play_pause_view"
+        app:layout_constraintLeft_toLeftOf="@+id/play_pause_view"
+        app:layout_constraintRight_toRightOf="@+id/play_pause_view"
+         />
+
+    <!-- Red Pie -->
+    <io.animal.mouse.views.ProgressPieView
+        android:id="@+id/my_progress"
+        android:layout_width="@dimen/progress_width"
+        android:layout_height="@dimen/progress_height"
+        app:bgColor="@color/red_timer"
+        app:fgColor="@android:color/white"
+        app:percent="25"
+        app:startAngle="0"
+        app:layout_constraintBottom_toBottomOf="@+id/play_pause_view"
+        app:layout_constraintLeft_toLeftOf="@+id/play_pause_view"
+        app:layout_constraintRight_toRightOf="@+id/play_pause_view"
+        app:layout_constraintTop_toTopOf="@+id/play_pause_view" />
+
+<!--    &lt;!&ndash; Play & Pause Button &ndash;&gt;-->
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        android:id="@+id/controller"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="50dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/menu_box"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/avd_pause_play2" />-->
+
+    <io.animal.mouse.views.PlayPauseView
+        android:id="@+id/play_pause_view"
+        android:layout_width="@dimen/pause_round_width"
+        android:layout_height="@dimen/pause_round_height"
+        app:layout_constraintBottom_toBottomOf="@+id/rotation_0"
+        app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
+        app:layout_constraintRight_toRightOf="@+id/rotation_0"
+        app:layout_constraintTop_toTopOf="@+id/rotation_0"
+        android:foreground="@android:color/transparent"
+        android:stateListAnimator="@animator/button_elevation"/>
+
+    <TextView
+        android:id="@+id/menu_box"
+        android:layout_width="55dp"
+        android:layout_height="match_parent"
+        app:layout_constraintRight_toLeftOf="@+id/adView"
+        android:background="@drawable/border" />
+
+    <ImageButton
+        android:id="@+id/more_menu"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:srcCompat="@drawable/ic_more_vert_24px"
+        app:layout_constraintLeft_toLeftOf="@+id/menu_box"
+        app:layout_constraintRight_toRightOf="@+id/menu_box"
+        app:layout_constraintTop_toTopOf="@+id/menu_box"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginTop="15dp" />
+
+    <Chronometer
+        android:id="@+id/stop_watch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:format="%s"
+        android:countDown="true"
+        style="@style/mini_watch"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/alarm_vibration" />
+
+    <!-- admob -->
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        app:layout_constraintRight_toRightOf="parent"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id_for_test" />
+</androidx.constraintlayout.widget.ConstraintLayout>
