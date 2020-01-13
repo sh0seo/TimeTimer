@@ -225,10 +225,10 @@ public class MainActivity extends AppCompatActivity {
 
                 builder.setContentTitle("TimeTimer") // required
                         .setContentText("Content")  // required
-                        .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
+//                        .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setSmallIcon(R.drawable.ic_test_notification)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_test_notification))
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
                         .setContentIntent(pendingIntent);
 
                 notifManager.notify(0, builder.build());

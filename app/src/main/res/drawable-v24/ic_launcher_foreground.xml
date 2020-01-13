@@ -34,11 +34,11 @@
         android:strokeColor="#00000000" />
 
     <path
-        android:pathData="M79,54C79,67.8 67.8,79 54,79C40.2,79 29,67.8 29,54C29,40.2 40.2,29 54,29C67.8,29 79,40.2 79,54Z"
+        android:pathData="M29,54C29,40.2 40.2,29 54,29C67.8,29 79,40.2 79,54C79,67.8 67.8,79 54,79C40.2,79 29,67.8 29,54Z"
         android:fillColor="#ee2a29"
         android:fillAlpha="1"/>
     <path
-        android:pathData="M54,28.74L79.24,28.74L79.24,56.66L54,56.66L54,28.74Z"
+        android:pathData="M79.41,54L54,54L54,28.86L79.41,28.86L79.41,54Z"
         android:fillColor="#ffffff"
         android:fillAlpha="1"/>
 </vector>
