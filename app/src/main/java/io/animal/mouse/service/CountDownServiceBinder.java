@@ -10,7 +10,7 @@ public class CountDownServiceBinder extends Binder {
         this.service = service;
     }
 
-    public CountDownService getService() {
+    public CountDownService getCountdownService() {
         return service;
     }
 }

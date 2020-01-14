@@ -124,25 +124,21 @@ public class MainActivity extends AppCompatActivity {
         // temp imple stopwatch
 
         miniStopWatch.setText("45:00");
-        miniStopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            @Override
-            public void onChronometerTick(Chronometer chronometer) {
-                stopWatchPie.setPercent(stopWatchPie.getPercent() + 1);
-            }
+        miniStopWatch.setOnChronometerTickListener(chronometer ->  {
+            stopWatchPie.setPercent(stopWatchPie.getPercent() + 1);
         });
 
-        playPauseController.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                long startTime = SystemClock.elapsedRealtime() + 1000 * 60 * 45;
+        playPauseController.setOnClickListener(v -> {
+            long startTime = SystemClock.elapsedRealtime() + 1000 * 60 * 45;
 
-                pref.edit().putLong("startTime", startTime).commit();
+            pref.edit().putLong("startTime", startTime).commit();
 
-                miniStopWatch.setBase(startTime);
+            miniStopWatch.setBase(startTime);
 //                stopWatch.setCountDown(true);
-                miniStopWatch.start();
-                playPauseController.toggle();
-            }
+            miniStopWatch.start();
+            playPauseController.toggle();
+
+            getCountdownService().startCountdown(startTime);
         });
     }
 
@@ -150,12 +146,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "onStart()");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume()");
 
         if (countDownService == null) {
             Log.d(TAG, "initializing service connection");
@@ -165,11 +155,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "about to call  : bindService");
             super.bindService(this.serviceIntent, this.serviceConnection, 0);
             Log.d(TAG, "has been called: bindService");
-        } else {
-            Log.d(TAG, "service already bound in bindService(), will not bind again");
-
-            onAfterServiceConnected(getCountdownService().getState());
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
     }
 
     @Override
@@ -178,11 +170,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onPause()");
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "onStop()");
+
+        unbindCountdownService();
     }
 
     /**
@@ -196,53 +189,21 @@ public class MainActivity extends AppCompatActivity {
             alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
         }
 
-        alarmVibration.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isAlarm = pref.getBoolean("alarm_type", true);
-                if (isAlarm) {
-                    alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
-                    // alert vibrate
-                    alarmUtil.playVibrate(getApplicationContext());
-                } else {
-                    alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
-                    // alert ringtone
-                    alarmUtil.playRingtone(getApplicationContext());
-                }
-
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("alarm_type", !isAlarm);
-                editor.commit();
-
-                // TODO test notification
-                String channelId = "channel";
-                String channelName = "Channel Name";
-
-                NotificationManager notifManager = (NotificationManager) getSystemService  (Context.NOTIFICATION_SERVICE);
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    int importance = NotificationManager.IMPORTANCE_HIGH;
-                    NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
-                    notifManager.createNotificationChannel(mChannel);
-                }
-
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-                Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-                notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                int requestID = (int) System.currentTimeMillis();
-                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                        requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                builder.setContentTitle("TimeTimer") // required
-                        .setContentText("Content")  // required
-//                        .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
-                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
-                        .setContentIntent(pendingIntent);
-
-//                notifManager.notify(0, builder.build());
+        alarmVibration.setOnClickListener(v -> {
+            boolean alarm = pref.getBoolean("alarm_type", true);
+            if (alarm) {
+                alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
+                // alert vibrate
+                alarmUtil.playVibrate(getApplicationContext());
+            } else {
+                alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
+                // alert ringtone
+                alarmUtil.playRingtone(getApplicationContext());
             }
+
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putBoolean("alarm_type", !alarm);
+            editor.commit();
         });
     }
 
@@ -250,11 +211,7 @@ public class MainActivity extends AppCompatActivity {
      * AdMob 초기화.
      */
     private void initializeAdMob() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
+        MobileAds.initialize(this, s -> { });
 
         // AdMob View.
         AdView mAdView = findViewById(R.id.adView);
@@ -309,8 +266,7 @@ public class MainActivity extends AppCompatActivity {
     private void onServiceConnectedBinder(CountDownServiceBinder binder) {
         Log.d(TAG, "onServiceConnected(CountdownServiceBinder)");
 
-        countDownService = binder.getCountDownService();
-        onAfterServiceConnected(getCountdownService().getState());
+        countDownService = binder.getCountdownService();
     }
 
     private void onServiceDisConnected() {
@@ -325,11 +281,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (isServiceBound()) {
             Log.d(TAG, "about to call  : super.unbindService");
-            unbindService(this.serviceConnection);
+            unbindService(serviceConnection);
             Log.d(TAG, "has been called: super.unbindService");
 
             countDownService = null;
-            this.serviceConnection = null;
+            serviceConnection = null;
         } else {
             Log.d(TAG, "service not bound in unbindCountdownService()");
         }
