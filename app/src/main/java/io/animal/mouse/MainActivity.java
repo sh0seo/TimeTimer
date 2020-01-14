@@ -10,16 +10,22 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.IBinder;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -30,6 +36,12 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+
+import io.animal.mouse.alarm.AlarmUtil;
+import io.animal.mouse.service.CountDownService;
+import io.animal.mouse.service.CountDownServiceBinder;
 import io.animal.mouse.settings.SettingsActivity;
 import io.animal.mouse.views.PlayPauseView;
 import io.animal.mouse.views.ProgressPieView;
@@ -41,15 +53,23 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences pref;
 
+    // UI Components
     private ImageView alarmVibration;
-
     private ProgressPieView stopWatchPie;
     private SeekCircle stopWatch;
     private PlayPauseView playPauseController;
+    private ImageButton settingsMenu;
+
+    // StopWatch Service
+    private ServiceConnection serviceConnection;
+    private CountDownService countDownService;
+    private Intent serviceIntent;
 
     private Chronometer miniStopWatch;
 
     private NotificationManagerCompat notificationManagerCompat;
+
+    private AlarmUtil alarmUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,20 +78,31 @@ public class MainActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
 
-        // get resources
-        initialize();
+        // findViewBy ~
+        stopWatchPie = findViewById(R.id.my_progress);
+        stopWatch = findViewById(R.id.my_seekbar);
+        playPauseController = findViewById(R.id.play_pause_view);
+
+        alarmVibration = findViewById(R.id.alarm_vibration);
+        miniStopWatch = findViewById(R.id.stop_watch);
+
+        settingsMenu = findViewById(R.id.more_menu);
+
 
         initializeAdMob();
+
+        this.serviceIntent = new Intent(this, CountDownService.class);
 
         initializeAlarmVibration();
 
         initializeSettingMenu();
 
-        notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        // Alarm & Vibrate Utility.
+        alarmUtil = new AlarmUtil();
 
-        stopWatchPie = findViewById(R.id.my_progress);
+//        notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
 
-        stopWatch = findViewById(R.id.my_seekbar);
+
         stopWatch.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
             @Override
             public void onProgressChanged(SeekCircle seekCircle, int progress, boolean fromUser) {
@@ -91,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // temp imple stopwatch
-        miniStopWatch = findViewById(R.id.stop_watch);
+
         miniStopWatch.setText("45:00");
         miniStopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
@@ -99,12 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 stopWatchPie.setPercent(stopWatchPie.getPercent() + 1);
             }
         });
-
-        playPauseController = findViewById(R.id.play_pause_view);
-//        long startTime = pref.getLong("startTime", 0);
-//        if (startTime == 0) {
-////            playPauseController.toggle();
-//        }
 
         playPauseController.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,71 +144,52 @@ public class MainActivity extends AppCompatActivity {
                 playPauseController.toggle();
             }
         });
-
-
-
-        // start & stop controller
-//        AppCompatImageView controller = findViewById(R.id.controller);
-//        controller.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final AppCompatImageView imageView = (AppCompatImageView) v;
-//                Drawable drawable = imageView.getDrawable();
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    if (drawable instanceof AnimatedVectorDrawable) {
-//                        AnimatedVectorDrawable animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
-//                        animatedVectorDrawable.registerAnimationCallback(new Animatable2.AnimationCallback() {
-//                            @Override
-//                            public void onAnimationEnd(Drawable drawable) {
-//                                super.onAnimationEnd(drawable);
-//                                if (status == 1) {
-//                                    imageView.setImageResource(R.drawable.avd_pause_play2);
-//                                    status = 0;
-//                                }
-//                            }
-//                        });
-//                        status = 1;
-//                        animatedVectorDrawable.start();
-//                    }
-//                } else {
-//                    if (drawable instanceof AnimatedVectorDrawableCompat) {
-//                        AnimatedVectorDrawableCompat animatedVectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
-//                        animatedVectorDrawableCompat.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
-//                            @Override
-//                            public void onAnimationEnd(Drawable drawable) {
-//                                super.onAnimationEnd(drawable);
-//                                if (status == 1) {
-//                                    imageView.setImageResource(R.drawable.avd_pause_play2);
-//                                    status = 0;
-//                                }
-//                            }
-//                        });
-////                        status = 1;
-//                        animatedVectorDrawableCompat.start();
-//                    }
-//                }
-//            }
-//        });
-
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+
+        if (countDownService == null) {
+            Log.d(TAG, "initializing service connection");
+            startCountDownService();
+            initServiceConnection();
+
+            Log.d(TAG, "about to call  : bindService");
+            super.bindService(this.serviceIntent, this.serviceConnection, 0);
+            Log.d(TAG, "has been called: bindService");
+        } else {
+            Log.d(TAG, "service already bound in bindService(), will not bind again");
+
+            onAfterServiceConnected(getCountdownService().getState());
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+    }
+
 
     @Override
     protected void onStop() {
         super.onStop();
-
-    }
-
-
-    private void initialize() {
-        alarmVibration = findViewById(R.id.alarm_vibration);
+        Log.d(TAG, "onStop()");
     }
 
     /**
      * Alarm & Vibration Button
      */
     private void initializeAlarmVibration() {
-        boolean isAlarm = pref.getBoolean("alarm", true);
+        boolean isAlarm = pref.getBoolean("alarm_type", true);
         if (isAlarm) {
             alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
         } else {
@@ -193,15 +199,19 @@ public class MainActivity extends AppCompatActivity {
         alarmVibration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isAlarm = pref.getBoolean("alarm", true);
+                boolean isAlarm = pref.getBoolean("alarm_type", true);
                 if (isAlarm) {
                     alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
+                    // alert vibrate
+                    alarmUtil.playVibrate(getApplicationContext());
                 } else {
                     alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
+                    // alert ringtone
+                    alarmUtil.playRingtone(getApplicationContext());
                 }
 
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("alarm", !isAlarm);
+                editor.putBoolean("alarm_type", !isAlarm);
                 editor.commit();
 
                 // TODO test notification
@@ -231,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
                         .setContentIntent(pendingIntent);
 
-                notifManager.notify(0, builder.build());
+//                notifManager.notify(0, builder.build());
             }
         });
     }
@@ -287,17 +297,100 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Setting Activity.
+     * Setting Menu Event
      */
     private void initializeSettingMenu() {
-        // show setting activity.
-        ImageView menu = findViewById(R.id.more_menu);
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(intent);
-            }
+        settingsMenu.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(intent);
         });
+    }
+
+    private void onServiceConnectedBinder(CountDownServiceBinder binder) {
+        Log.d(TAG, "onServiceConnected(CountdownServiceBinder)");
+
+        countDownService = binder.getCountDownService();
+        onAfterServiceConnected(getCountdownService().getState());
+    }
+
+    private void onServiceDisConnected() {
+        Log.d(TAG, "onServiceDisConnected()");
+
+        countDownService = null;
+        serviceConnection = null;
+    }
+
+    protected void unbindCountdownService() {
+        Log.d(TAG, "unbindCountdownService()");
+
+        if (isServiceBound()) {
+            Log.d(TAG, "about to call  : super.unbindService");
+            unbindService(this.serviceConnection);
+            Log.d(TAG, "has been called: super.unbindService");
+
+            countDownService = null;
+            this.serviceConnection = null;
+        } else {
+            Log.d(TAG, "service not bound in unbindCountdownService()");
+        }
+    }
+
+    private final boolean isServiceBound() {
+        return countDownService != null;
+    }
+
+    private CountDownService getCountdownService() {
+        if (isServiceBound()) {
+            return countDownService;
+        } else {
+            throw new IllegalStateException("CountdownService is not bound to activity");
+        }
+    }
+
+    private void startCountDownService() {
+        Log.d(TAG, "startCountdownService()");
+
+        Log.d(TAG, "about to call  : startService");
+        ComponentName result = super.startService(this.serviceIntent);
+        Log.d(TAG, "has been called: startService - result: " + result);
+    }
+
+    private void initServiceConnection() {
+        Log.d(TAG, "initServiceConnection()");
+
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                Log.d(TAG, "ServiceConnection#onServiceConnected()");
+
+                CountDownServiceBinder binder = (CountDownServiceBinder) service;
+                onServiceConnectedBinder(binder);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                Log.d(TAG, "ServiceConnection#onServiceDisconnected()");
+
+                onServiceDisConnected();
+            }
+        };
+    }
+
+    private final void onAfterServiceConnected(TimerStatus serviceState) {
+        Log.d(TAG, "onAfterServiceConnected(" + serviceState + ")");
+
+//        TimerStatus[] handledStates = getHandledServiceStates();
+//        TimerStatus[] finishingStates = getFinishingServiceStates();
+
+//        if (Arrays.binarySearch(handledStates, serviceState) >= 0) {
+//            Log.d(TAG, "Current activity will handle state " + serviceState + ".");
+//            handleState(serviceState);
+//        } else if (Arrays.binarySearch(finishingStates, serviceState) >= 0) {
+//            Log.d(TAG, "Current activity will finish because of state " + serviceState + ".");
+//            onBeforeFinish();
+//            finish();
+//        } else {
+//            Log.d(TAG, "Current activity will execute navigation from state "  + serviceState + ".");
+//        }
     }
 }
