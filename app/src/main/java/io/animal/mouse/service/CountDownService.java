@@ -28,6 +28,7 @@ public class CountDownService extends Service implements IRemoteService {
 
     private SharedPreferences pref;
 
+    private AlarmPlayer alarmPlayer;
 
     @Override
     public void onCreate() {
@@ -40,6 +41,8 @@ public class CountDownService extends Service implements IRemoteService {
         remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
         countDownServiceBinder = new CountDownServiceBinder(this);
+
+        alarmPlayer = new AlarmPlayer();
     }
 
     @Override
@@ -72,6 +75,8 @@ public class CountDownService extends Service implements IRemoteService {
             public void onFinish() {
                 Log.d(TAG, "onFinish()");
                 onCountdownFinish();
+
+                alarmPlayer.playAlarmSound(getApplicationContext());
             }
         }.start();
     }
