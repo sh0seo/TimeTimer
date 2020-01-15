@@ -17,15 +17,15 @@
         android:background="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/menu_box"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="30dp" />
 
     <!-- 시계의 0min, 45min, 30min, 15min start -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rotation_0"
-        android:layout_width="@dimen/watch_width"
-        android:layout_height="@dimen/watch_height"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="@dimen/watch_width_land"
+        android:layout_height="@dimen/watch_height_land"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="@id/menu_box"
         app:layout_constraintTop_toTopOf="parent" >
@@ -75,8 +75,8 @@
     <!-- 시계의 55min, 40min, 25min, 10min start -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rotation_30"
-        android:layout_width="@dimen/watch_width"
-        android:layout_height="@dimen/watch_height"
+        android:layout_width="@dimen/watch_width_land"
+        android:layout_height="@dimen/watch_height_land"
         app:layout_constraintBottom_toBottomOf="@+id/rotation_0"
         app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
         app:layout_constraintRight_toRightOf="@+id/rotation_0"
@@ -128,8 +128,8 @@
     <!-- 시계의 50min, 35min, 20min, 5min start -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rotation_60"
-        android:layout_width="@dimen/watch_width"
-        android:layout_height="@dimen/watch_height"
+        android:layout_width="@dimen/watch_width_land"
+        android:layout_height="@dimen/watch_height_land"
         app:layout_constraintBottom_toBottomOf="@+id/rotation_0"
         app:layout_constraintLeft_toLeftOf="@+id/rotation_0"
         app:layout_constraintRight_toRightOf="@+id/rotation_0"
@@ -181,22 +181,21 @@
     <!-- time -->
     <io.animal.mouse.views.SeekCircle
         android:id="@+id/my_seekbar"
-        android:layout_width="@dimen/seeker_height"
-        android:layout_height="@dimen/seeker_height"
+        android:layout_width="@dimen/seeker_height_land"
+        android:layout_height="@dimen/seeker_height_land"
         seekcircle:min="0"
         seekcircle:max="3600"
         seekcircle:progress="900"
         app:layout_constraintTop_toTopOf="@+id/play_pause_view"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause_view"
         app:layout_constraintLeft_toLeftOf="@+id/play_pause_view"
-        app:layout_constraintRight_toRightOf="@+id/play_pause_view"
-         />
+        app:layout_constraintRight_toRightOf="@+id/play_pause_view" />
 
     <!-- Red Pie -->
     <io.animal.mouse.views.ProgressPieView
         android:id="@+id/my_progress"
-        android:layout_width="@dimen/progress_width"
-        android:layout_height="@dimen/progress_height"
+        android:layout_width="@dimen/progress_width_land"
+        android:layout_height="@dimen/progress_height_land"
         app:bgColor="@color/red_timer"
         app:fgColor="@android:color/white"
         app:percent="25"
@@ -232,7 +231,7 @@
         android:id="@+id/menu_box"
         android:layout_width="55dp"
         android:layout_height="match_parent"
-        app:layout_constraintRight_toLeftOf="@+id/adView"
+        app:layout_constraintRight_toRightOf="parent"
         android:background="@drawable/border" />
 
     <ImageButton
@@ -253,17 +252,17 @@
         android:format="%s"
         android:countDown="true"
         style="@style/mini_watch"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintRight_toRightOf="@+id/alarm_vibration" />
 
     <!-- admob -->
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_ad_unit_id_for_test" />
 </androidx.constraintlayout.widget.ConstraintLayout>

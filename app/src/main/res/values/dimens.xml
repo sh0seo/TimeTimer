@@ -19,4 +19,20 @@
     <dimen name="progress_width">235dp</dimen>
     <dimen name="progress_height">235dp</dimen>
 
+
+    <dimen name="watch_width_land">290dp</dimen>
+    <dimen name="watch_height_land">290dp</dimen>
+
+    <dimen name="seeker_width_land">223dp</dimen>
+    <dimen name="seeker_height_land">223dp</dimen>
+
+    <dimen name="progress_width_land">200dp</dimen>
+    <dimen name="progress_height_land">200dp</dimen>
+
+
+    <dimen name="box_rotation_30">30dp</dimen>
+    <dimen name="text_rotation_30">-30dp</dimen>
+
+    <dimen name="box_rotation_60">60dp</dimen>
+    <dimen name="text_rotation_60">-60dp</dimen>
 </resources>

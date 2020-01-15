@@ -121,14 +121,14 @@ public class ProgressCircle extends View {
         // Center our canvas
         canvas.translate(mCenterX, mCenterY);
 
-        int relativeProgress = mProgress - mMinProgress;
+//        int relativeProgress = mProgress - mMinProgress;
         int relativeMax = mMaxProgress - mMinProgress;
         float rotation = 360.0f / (float) relativeMax;
 
-        for (int i = 0; i < relativeMax; ++i) {
+        for (int i = 0; i < relativeMax; i++) {
             canvas.save();
 
-            if (i == 0 ||  i % 60 == 0) {
+            if (i % 60 == 0) {
                 canvas.rotate((float) i * rotation);
                 canvas.translate(0, -mRadius);
 
@@ -142,11 +142,11 @@ public class ProgressCircle extends View {
 //            }
 
 //            if (i < relativeProgress) {
-                if (i % 360 == 0) {
-                    float bias = (float) i / (float) (relativeMax - 1);
+                if ((i / 60) % 5 == 0) {
+//                    float bias = (float) i / (float) (relativeMax - 1);
 //                    int color = interpolateColor(mColor1, mColor, bias);
-                    mPaint.setColor(mColor);
                     canvas.scale(0.7f, 0.7f);
+                    mPaint.setColor(mColor);
                 } else {
                     canvas.scale(0.3f, 0.3f);
                     mPaint.setColor(mColor);
