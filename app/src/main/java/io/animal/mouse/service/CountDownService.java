@@ -1,7 +1,9 @@
 package io.animal.mouse.service;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
@@ -14,7 +16,9 @@ public class CountDownService extends Service implements IRemoteService {
 
     private final int MAX_SECONDS = 3600;
     private final int ONE_SECONDS = 1000;
-    private final int MAX_MILLI_SECONDS = MAX_SECONDS * ONE_SECONDS;
+    private final int DEFAULT_MILLI_SECONDS = 2700 * ONE_SECONDS;
+
+    private static final int COUNTDOWN_TICK_INTERVAL = 500;
 
     private CountDownTimer countDownTimer;
     private IBinder countDownServiceBinder;
@@ -22,21 +26,18 @@ public class CountDownService extends Service implements IRemoteService {
     private TimerStatus timerStatus;
     private long remainMilliseconds;
 
-    private static final int COUNTDOWN_TICK_INTERVALL = 500;
-//    static final int DELAY_TIME = COUNTDOWN_TICK_INTERVALL / 2;
-//    public static final int GUI_UPDATE_INTERVALL = COUNTDOWN_TICK_INTERVALL / 4;
+    private SharedPreferences pref;
 
-
-    public CountDownService() {
-        Log.d(TAG, "CountdownService instance created");
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+
         timerStatus = TimerStatus.STOP;
-        remainMilliseconds = MAX_MILLI_SECONDS;
+
+        remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
         countDownServiceBinder = new CountDownServiceBinder(this);
     }
@@ -51,6 +52,8 @@ public class CountDownService extends Service implements IRemoteService {
     public void onDestroy() {
         Log.d(TAG, "onDestroy()");
         super.onDestroy();
+
+        pref.edit().putLong("remain_time", remainMilliseconds).apply();
     }
 
     public void startCountdown(final long millis) {
@@ -58,7 +61,7 @@ public class CountDownService extends Service implements IRemoteService {
 
         timerStatus = TimerStatus.START;
 
-        countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVALL) {
+        countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.d(TAG, "onTick(" + millisUntilFinished + ")");
@@ -83,6 +86,10 @@ public class CountDownService extends Service implements IRemoteService {
 
     public TimerStatus getState() {
         return timerStatus;
+    }
+
+    public long getRemainMilliseconds() {
+        return remainMilliseconds;
     }
 
     private void onCountdownTimerTick(long remainMilliseconds) {
@@ -115,7 +122,6 @@ public class CountDownService extends Service implements IRemoteService {
         this.callback = null;
         return true;
     }
-
 
 //    // TODO test notification
 //    String channelId = "channel";

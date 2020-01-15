@@ -18,8 +18,6 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import io.animal.mouse.alarm.AlarmUtil;
 import io.animal.mouse.service.CountDownService;
@@ -34,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
 
     private static final String TAG = "MainActivity";
 
-    private final long MAX_TIMER_MILLISECONS = 3600 * 1000;
+    private final long MAX_TIMER_MILLISECODNS = 3600 * 1000;
 
     private SharedPreferences pref;
 
@@ -93,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
                     return;
                 }
 
-                updateUIStopWatchPie(MAX_TIMER_MILLISECONS - (progress * 1000));
-                updateUIMiniStopWatch(MAX_TIMER_MILLISECONS - (progress * 1000));
+                updateUIStopWatchPie(MAX_TIMER_MILLISECODNS - (progress * 1000));
+                updateUIMiniStopWatch(MAX_TIMER_MILLISECODNS - (progress * 1000));
             }
 
             @Override
@@ -106,9 +104,6 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
             }
         });
 
-        // temp imple stopwatch
-        miniStopWatch.setText("45:00");
-
         playPauseController.setOnClickListener(v -> {
             float stopWatchPiePercent = stopWatchPie.getPercent();
             int stopWatchProgress = stopWatch.getProgress();
@@ -116,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
             long startTime = (3600 - stopWatchProgress) * 1000;
 
             Log.d(TAG, "StartTime: " + startTime + " ms PiePercent: " + stopWatchPiePercent + " Progress: " + stopWatchProgress);
-            pref.edit().putLong("startTime", startTime).commit();
+            pref.edit().putLong("startTime", startTime).apply();
 
             if (isServiceBound()) {
                 if (countDownService.getState() == TimerStatus.STOP) {
@@ -146,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
             Log.d(TAG, "about to call  : bindService");
             bindService(serviceIntent, serviceConnection, 0);
             Log.d(TAG, "has been called: bindService");
+
         }
     }
 
@@ -155,11 +151,6 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
         Log.d(TAG, "onStop()");
 
         unBindCountdownService();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     /**
@@ -187,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
 
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean("alarm_type", !bAlarm);
-            editor.commit();
+            editor.apply();
         });
     }
 
@@ -195,11 +186,7 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
      * AdMob 초기화.
      */
     private void initializeAdMob() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
+        MobileAds.initialize(this, s -> {});
 
         // AdMob View.
         AdView mAdView = findViewById(R.id.adView);
@@ -254,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
     private void onServiceConnectedBinder(CountDownServiceBinder binder) {
         Log.d(TAG, "onServiceConnected(CountdownServiceBinder)");
 
-        countDownService = binder.getService();
+        countDownService = binder.getCountdownService();
         countDownService.registerCallback(this);
     }
 
@@ -311,6 +298,15 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
 
                 CountDownServiceBinder binder = (CountDownServiceBinder) service;
                 onServiceConnectedBinder(binder);
+
+                // Update UI.
+                updateUIMiniStopWatch(countDownService.getRemainMilliseconds());
+                updateUIStopWatchPie(countDownService.getRemainMilliseconds());
+                if (countDownService.getState() == TimerStatus.START) {
+                    if (playPauseController.isPlaying()) {
+                        playPauseController.toggle();
+                    }
+                }
             }
 
             @Override
@@ -363,8 +359,8 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
     private void updateUIStopWatchPie(long milliseconds) {
         Log.d(TAG, "updateUIStopWatchPie(" + milliseconds + ")");
 
-        float t = MAX_TIMER_MILLISECONS - milliseconds;
-        float temp = t / MAX_TIMER_MILLISECONS * 100;
+        float t = MAX_TIMER_MILLISECODNS - milliseconds;
+        float temp = t / MAX_TIMER_MILLISECODNS * 100;
         stopWatchPie.setPercent(temp);
     }
 }
