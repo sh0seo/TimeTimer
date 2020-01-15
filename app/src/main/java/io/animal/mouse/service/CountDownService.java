@@ -94,7 +94,12 @@ public class CountDownService extends Service implements IRemoteService {
     }
 
     private void onCountdownFinish() {
+        timerStatus = TimerStatus.STOP;
         countDownTimer.cancel();
+
+        if (callback != null) {
+            callback.onFinish();
+        }
     }
 
     private IRemoteServiceCallback callback;

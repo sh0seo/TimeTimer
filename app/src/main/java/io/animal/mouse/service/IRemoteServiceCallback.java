@@ -6,4 +6,6 @@ package io.animal.mouse.service;
 public interface IRemoteServiceCallback {
 
     void onTick(long milliseconds);
+
+    void onFinish();
 }

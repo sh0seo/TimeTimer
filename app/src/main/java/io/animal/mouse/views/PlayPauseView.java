@@ -125,4 +125,8 @@ public class PlayPauseView extends FrameLayout {
         mAnimatorSet.playTogether(colorAnim, pausePlayAnim);
         mAnimatorSet.start();
     }
+
+    public boolean isPlaying() {
+        return mDrawable.isPlay();
+    }
 }

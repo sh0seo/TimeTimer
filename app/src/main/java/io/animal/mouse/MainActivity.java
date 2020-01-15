@@ -329,10 +329,17 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
         updateUIMiniStopWatch(milliseconds);
 
         updateUIStopWatchPie(milliseconds);
+    }
 
-        if (countDownService.getState() == TimerStatus.START) {
-            playPauseController.toggle();
-        }
+    @Override
+    public void onFinish() {
+        Log.d(TAG, "onFinish()");
+
+        updateUIMiniStopWatch(0);
+
+        updateUIStopWatchPie(0);
+
+        playPauseController.toggle();
     }
 
     private void updateUIMiniStopWatch(long milliseconds) {
