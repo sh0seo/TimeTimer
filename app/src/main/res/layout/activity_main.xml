@@ -128,51 +128,51 @@
         android:id="@+id/rotation_60"
         android:layout_width="@dimen/watch_width"
         android:layout_height="@dimen/watch_height"
+        android:rotation="60"
         app:layout_constraintBottom_toTopOf="@+id/menu_box"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:rotation="60" >
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="50"
-        style="@style/minutes_watch_60"
-        android:textFontWeight="900"
-        app:layout_constraintTop_toTopOf="@+id/rotation_60"
-        app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
-        app:layout_constraintRight_toRightOf="@+id/rotation_60" />
+        <TextView
+            style="@style/minutes_watch_60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50"
+            android:textFontWeight="900"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
+            app:layout_constraintRight_toRightOf="@+id/rotation_60"
+            app:layout_constraintTop_toTopOf="@+id/rotation_60" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="35"
-        style="@style/minutes_watch_60"
-        android:textFontWeight="900"
-        app:layout_constraintTop_toTopOf="@+id/rotation_60"
-        app:layout_constraintRight_toRightOf="@+id/rotation_60"
-        app:layout_constraintBottom_toBottomOf="@+id/rotation_60" />
+        <TextView
+            style="@style/minutes_watch_60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="35"
+            android:textFontWeight="900"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_60"
+            app:layout_constraintRight_toRightOf="@+id/rotation_60"
+            app:layout_constraintTop_toTopOf="@+id/rotation_60" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="20"
-        style="@style/minutes_watch_60"
-        android:textFontWeight="900"
-        app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
-        app:layout_constraintRight_toRightOf="@+id/rotation_60"
-        app:layout_constraintBottom_toBottomOf="@+id/rotation_60" />
+        <TextView
+            style="@style/minutes_watch_60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20"
+            android:textFontWeight="900"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_60"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
+            app:layout_constraintRight_toRightOf="@+id/rotation_60" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="  5"
-        style="@style/minutes_watch_60"
-        android:textFontWeight="900"
-        app:layout_constraintTop_toTopOf="@+id/rotation_60"
-        app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
-        app:layout_constraintBottom_toBottomOf="@+id/rotation_60" />
+        <TextView
+            style="@style/minutes_watch_60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  5"
+            android:textFontWeight="900"
+            app:layout_constraintBottom_toBottomOf="@+id/rotation_60"
+            app:layout_constraintLeft_toLeftOf="@+id/rotation_60"
+            app:layout_constraintTop_toTopOf="@+id/rotation_60" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- 시계의 50min, 35min, 20min, 5min end -->
 
