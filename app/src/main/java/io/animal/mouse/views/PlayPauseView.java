@@ -126,6 +126,22 @@ public class PlayPauseView extends FrameLayout {
         mAnimatorSet.start();
     }
 
+    public void toggleNotAnimation() {
+        if (mAnimatorSet != null) {
+            mAnimatorSet.cancel();
+        }
+
+        mAnimatorSet = new AnimatorSet();
+        final boolean isPlay = mDrawable.isPlay();
+        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR, isPlay ? mPauseBackgroundColor : mPlayBackgroundColor);
+        colorAnim.setEvaluator(new ArgbEvaluator());
+        final Animator pausePlayAnim = mDrawable.getPausePlayAnimator();
+        mAnimatorSet.setInterpolator(new DecelerateInterpolator());
+        mAnimatorSet.setDuration(0);
+        mAnimatorSet.playTogether(colorAnim, pausePlayAnim);
+        mAnimatorSet.start();
+    }
+
     public boolean isPlaying() {
         return mDrawable.isPlay();
     }

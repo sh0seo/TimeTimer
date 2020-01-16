@@ -40,7 +40,12 @@ public class CountDownService extends Service {
 
         pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
 
-        timerStatus = TimerStatus.STOP;
+        int timerType = pref.getInt("timer_status", TimerStatus.STOP.getType());
+        if (timerType == 0) {
+            timerStatus = TimerStatus.STOP;
+        } else if (timerType == 1) {
+            timerStatus = TimerStatus.START;
+        }
 
         remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
@@ -52,6 +57,9 @@ public class CountDownService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind(intent)");
+
+        remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
+
         return this.countDownServiceBinder;
     }
 
@@ -61,6 +69,7 @@ public class CountDownService extends Service {
         super.onDestroy();
 
         pref.edit().putLong("remain_time", remainMilliseconds).apply();
+        pref.edit().putInt("timer_status", timerStatus.getType()).apply();
     }
 
     public void startCountdown(final long millis) {
@@ -104,6 +113,10 @@ public class CountDownService extends Service {
 
     public long getRemainMilliseconds() {
         return remainMilliseconds;
+    }
+
+    public void setRemainMilliseconds(long milliseconds) {
+        this.remainMilliseconds = milliseconds;
     }
 
 //    // TODO test notification

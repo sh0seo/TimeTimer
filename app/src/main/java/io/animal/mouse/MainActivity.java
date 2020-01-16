@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Chronometer;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private final long MAX_TIMER_MILLISECODNS = 3600 * 1000;
+    private final long MAX_TIMER_MILLISECONDS = 3600 * 1000;
 
     private SharedPreferences pref;
 
@@ -96,8 +97,12 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                updateUIStopWatchPie(MAX_TIMER_MILLISECODNS - (progress * 1000));
-                updateUIMiniStopWatch(MAX_TIMER_MILLISECODNS - (progress * 1000));
+                long milliSeconds = MAX_TIMER_MILLISECONDS - (progress * 1000);
+
+                updateUIStopWatchPie(milliSeconds);
+                updateUIMiniStopWatch(milliSeconds);
+
+                countDownService.setRemainMilliseconds(milliSeconds);
             }
 
             @Override
@@ -119,8 +124,13 @@ public class MainActivity extends AppCompatActivity {
             pref.edit().putLong("startTime", startTime).apply();
 
             if (isServiceBound()) {
+                long remainMilliseconds = countDownService.getRemainMilliseconds();
+                if (remainMilliseconds == 0) {
+                    remainMilliseconds = startTime;
+                }
+
                 if (countDownService.getState() == TimerStatus.STOP) {
-                    countDownService.startCountdown(startTime);
+                    countDownService.startCountdown(remainMilliseconds);
                 } else if (countDownService.getState() == TimerStatus.START) {
                     countDownService.stopCountdown();
                 }
@@ -146,6 +156,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "about to call  : bindService");
             bindService(serviceIntent, serviceConnection, 0);
             Log.d(TAG, "has been called: bindService");
+        }
+
+        if (isServiceBound()) {
+            if (countDownService.getState() == TimerStatus.START) {
+                if (!playPauseController.isPlaying()) {
+                    playPauseController.toggleNotAnimation();
+                }
+            }
         }
 
         EventBus.getDefault().register(this);
@@ -301,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                 updateUIStopWatchPie(countDownService.getRemainMilliseconds());
                 if (countDownService.getState() == TimerStatus.START) {
                     if (playPauseController.isPlaying()) {
-                        playPauseController.toggle();
+                        playPauseController.toggleNotAnimation();
                     }
                 }
             }
@@ -315,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    @SuppressWarnings("noused")
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCountdownTickEvent(CountdownTickEvent e) {
         Log.d(TAG, "onCountdownTickEvent(" + e.getMilliseconds() + ")");
@@ -326,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
         updateUIStopWatchPie(milliseconds);
     }
 
-    @SuppressWarnings("noused")
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCountdownFinishEvent(CountdownFinishEvent e) {
         Log.d(TAG, "onCountdownFinishEvent()");
@@ -359,8 +377,8 @@ public class MainActivity extends AppCompatActivity {
     private void updateUIStopWatchPie(long milliseconds) {
         Log.d(TAG, "updateUIStopWatchPie(" + milliseconds + ")");
 
-        float t = MAX_TIMER_MILLISECODNS - milliseconds;
-        float temp = t / MAX_TIMER_MILLISECODNS * 100;
+        float t = MAX_TIMER_MILLISECONDS - milliseconds;
+        float temp = t / MAX_TIMER_MILLISECONDS * 100;
         stopWatchPie.setPercent(temp);
     }
 }
