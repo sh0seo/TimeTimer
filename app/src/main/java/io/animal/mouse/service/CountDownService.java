@@ -187,8 +187,6 @@ public class CountDownService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
-//            channel.setSound(null, null); // no sound
-            channel.setShowBadge(true);
             notificationManager.createNotificationChannel(channel);
         }
 
@@ -196,14 +194,15 @@ public class CountDownService extends Service {
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         int requestID = (int) System.currentTimeMillis();
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                getApplicationContext(), channelId);
         builder.setContentTitle("TimeTimer") // required
                 .setContentText(text)  // required
-//                .setDefaults(Notification.BADGE_ICON_SMALL) // 알림, 사운드 진동 설정
+                .setDefaults(Notification.BADGE_ICON_SMALL) // 알림, 사운드 진동 설정
                 .setPriority(NotificationCompat.PRIORITY_LOW) // not display in heads-up .
-//                .setSound(null)
                 .setSmallIcon(R.drawable.ic_notification)
 //                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification))
                 .setContentIntent(pendingIntent);
