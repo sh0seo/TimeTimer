@@ -100,7 +100,7 @@ public class CountDownService extends Service {
 
         timerStatus = TimerStatus.START;
 
-//        sendStartNotification("Start Countdown");
+        sendStartNotification("Start Countdown");
 
         countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVAL) {
             @Override
@@ -119,7 +119,7 @@ public class CountDownService extends Service {
                 countDownTimer.cancel();
                 EventBus.getDefault().post(new CountdownFinishEvent());
 
-//                sendFinishNotification("End Countdown");
+                sendFinishNotification("End Countdown");
                 alarmPlayer.playAlarmSound(getApplicationContext());
             }
         }.start();
@@ -184,9 +184,12 @@ public class CountDownService extends Service {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(mChannel);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+//            channel.setSound(null, null); // no sound
+            channel.setShowBadge(true);
+            notificationManager.createNotificationChannel(channel);
         }
 
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
@@ -198,9 +201,9 @@ public class CountDownService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
         builder.setContentTitle("TimeTimer") // required
                 .setContentText(text)  // required
-                .setDefaults(Notification.BADGE_ICON_SMALL) // 알림, 사운드 진동 설정
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT) // not display in heads-up .
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+//                .setDefaults(Notification.BADGE_ICON_SMALL) // 알림, 사운드 진동 설정
+                .setPriority(NotificationCompat.PRIORITY_LOW) // not display in heads-up .
+//                .setSound(null)
                 .setSmallIcon(R.drawable.ic_notification)
 //                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification))
                 .setContentIntent(pendingIntent);
@@ -211,16 +214,18 @@ public class CountDownService extends Service {
     private void sendFinishNotification(String text) {
         Log.d(TAG, "sendNotification(" + text + ")");
 
-        String channelId = "channel";
-        String channelName = "Channel Name";
+        String channelId = "io.animal";
+        String channelName = "mouse";
         int notifyId = 0;
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
-            notificationManager.createNotificationChannel(mChannel);
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+//            channel.enableVibration(true);
+//            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            notificationManager.createNotificationChannel(channel);
         }
 
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
@@ -232,11 +237,13 @@ public class CountDownService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
         builder.setContentTitle("TimeTimer") // required
                 .setContentText(text)  // required
-                .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
+//                .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+
                 .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
-                .setContentIntent(pendingIntent);
+//                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
+                .setContentIntent(pendingIntent)
+                .setChannelId(channelId);
 
         notificationManager.notify(notifyId, builder.build());
     }
