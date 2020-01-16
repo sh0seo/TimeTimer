@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isServiceBound()) {
             if (countDownService.getState() == TimerStatus.START) {
-                if (!playPauseController.isPlaying()) {
+                if (playPauseController.isPlaying()) {
                     playPauseController.toggleNotAnimation();
                 }
             }

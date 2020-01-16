@@ -1,15 +1,27 @@
 package io.animal.mouse.service;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompatExtras;
+
 import org.greenrobot.eventbus.EventBus;
 
+import io.animal.mouse.MainActivity;
+import io.animal.mouse.R;
 import io.animal.mouse.TimerStatus;
 import io.animal.mouse.events.CountdownFinishEvent;
 import io.animal.mouse.events.CountdownTickEvent;
@@ -40,14 +52,14 @@ public class CountDownService extends Service {
 
         pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
 
+        remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
+
         int timerType = pref.getInt("timer_status", TimerStatus.STOP.getType());
-        if (timerType == 0) {
+        if (timerType == TimerStatus.STOP.getType()) {
             timerStatus = TimerStatus.STOP;
-        } else if (timerType == 1) {
+        } else if (timerType == TimerStatus.START.getType()) {
             timerStatus = TimerStatus.START;
         }
-
-        remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
         countDownServiceBinder = new CountDownServiceBinder(this);
 
@@ -60,7 +72,7 @@ public class CountDownService extends Service {
 
         remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
-        return this.countDownServiceBinder;
+        return countDownServiceBinder;
     }
 
     @Override
@@ -76,6 +88,8 @@ public class CountDownService extends Service {
         Log.d(TAG, "startCountdown(" + millis + ")");
 
         timerStatus = TimerStatus.START;
+
+        sendStartNotification("Start Countdown");
 
         countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVAL) {
             @Override
@@ -94,6 +108,8 @@ public class CountDownService extends Service {
                 countDownTimer.cancel();
                 EventBus.getDefault().post(new CountdownFinishEvent());
 
+
+                sendFinishNotification("End Countdown");
                 alarmPlayer.playAlarmSound(getApplicationContext());
             }
         }.start();
@@ -104,7 +120,11 @@ public class CountDownService extends Service {
 
         timerStatus = TimerStatus.STOP;
 
-        countDownTimer.cancel();
+        try {
+            countDownTimer.cancel();
+        } catch (NullPointerException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public TimerStatus getState() {
@@ -119,32 +139,69 @@ public class CountDownService extends Service {
         this.remainMilliseconds = milliseconds;
     }
 
-//    // TODO test notification
-//    String channelId = "channel";
-//    String channelName = "Channel Name";
-//
-//    NotificationManager notifManager = (NotificationManager) getSystemService  (Context.NOTIFICATION_SERVICE);
-//
-//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//        int importance = NotificationManager.IMPORTANCE_HIGH;
-//        NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
-//        notifManager.createNotificationChannel(mChannel);
-//    }
-//
-//    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-//    Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//    int requestID = (int) System.currentTimeMillis();
-//    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-//            requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//                builder.setContentTitle("TimeTimer") // required
-//                        .setContentText("Content")  // required
-////                        .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
-//                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-//            .setSmallIcon(R.drawable.ic_notification)
-//                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
-//            .setContentIntent(pendingIntent);
-//
-////                notifManager.notify(0, builder.build());
+    private void sendStartNotification(String text) {
+        Log.d(TAG, "sendNotification(" + text + ")");
+
+        String channelId = "channel";
+        String channelName = "Channel Name";
+        int notifyId = 0;
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        int requestID = (int) System.currentTimeMillis();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
+        builder.setContentTitle("TimeTimer") // required
+                .setContentText(text)  // required
+                .setDefaults(Notification.BADGE_ICON_SMALL) // 알림, 사운드 진동 설정
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT) // not display in heads-up .
+//                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setSmallIcon(R.drawable.ic_notification)
+//                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification))
+                .setContentIntent(pendingIntent);
+
+        notificationManager.notify(notifyId, builder.build());
+    }
+
+    private void sendFinishNotification(String text) {
+        Log.d(TAG, "sendNotification(" + text + ")");
+
+        String channelId = "channel";
+        String channelName = "Channel Name";
+        int notifyId = 0;
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        int requestID = (int) System.currentTimeMillis();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
+        builder.setContentTitle("TimeTimer") // required
+                .setContentText(text)  // required
+                .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
+                .setContentIntent(pendingIntent);
+
+        notificationManager.notify(notifyId, builder.build());
+    }
 }
