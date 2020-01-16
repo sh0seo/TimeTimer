@@ -7,28 +7,28 @@
         app:title="@string/display_title"
         app:summary="@string/display_etc" />
 
-    <PreferenceCategory
-        app:title="@string/alarm_title"
-        app:iconSpaceReserved="false">
+<!--    <PreferenceCategory-->
+<!--        app:title="@string/alarm_title"-->
+<!--        app:iconSpaceReserved="false">-->
 
-        <Preference
-            app:key="ringtone"
-            app:title="@string/alarm_type_title"
-            app:icon="@drawable/ic_alarm_active_24px"
-            app:summary="@string/alarm_type_title"/>
+<!--        <Preference-->
+<!--            app:key="ringtone"-->
+<!--            app:title="@string/alarm_type_title"-->
+<!--            app:icon="@drawable/ic_alarm_active_24px"-->
+<!--            app:summary="@string/alarm_type_title"/>-->
 
-        <SeekBarPreference
-            app:key="ringtone_volume"
-            app:icon="@drawable/ic_volume_up_24px"
-            app:title="@string/alarm_volume_title"
-            app:showSeekBarValue="true" />
+<!--        <SeekBarPreference-->
+<!--            app:key="ringtone_volume"-->
+<!--            app:icon="@drawable/ic_volume_up_24px"-->
+<!--            app:title="@string/alarm_volume_title"-->
+<!--            app:showSeekBarValue="true" />-->
 
-        <SwitchPreferenceCompat
-            app:key="vibration"
-            app:icon="@drawable/ic_vibration_24px"
-            app:title="@string/vibration_title"/>
+<!--        <SwitchPreferenceCompat-->
+<!--            app:key="vibration"-->
+<!--            app:icon="@drawable/ic_vibration_24px"-->
+<!--            app:title="@string/vibration_title"/>-->
 
-    </PreferenceCategory>
+<!--    </PreferenceCategory>-->
 
     <PreferenceCategory
         app:title="@string/etc_title"
