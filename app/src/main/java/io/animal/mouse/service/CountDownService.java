@@ -1,5 +1,6 @@
 package io.animal.mouse.service;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,9 +12,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompatExtras;
@@ -47,8 +50,16 @@ public class CountDownService extends Service {
     private AlarmPlayer alarmPlayer;
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand()");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
+
+        startForegroundService();
 
         pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
 
@@ -89,7 +100,7 @@ public class CountDownService extends Service {
 
         timerStatus = TimerStatus.START;
 
-        sendStartNotification("Start Countdown");
+//        sendStartNotification("Start Countdown");
 
         countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVAL) {
             @Override
@@ -108,8 +119,7 @@ public class CountDownService extends Service {
                 countDownTimer.cancel();
                 EventBus.getDefault().post(new CountdownFinishEvent());
 
-
-                sendFinishNotification("End Countdown");
+//                sendFinishNotification("End Countdown");
                 alarmPlayer.playAlarmSound(getApplicationContext());
             }
         }.start();
@@ -139,11 +149,37 @@ public class CountDownService extends Service {
         this.remainMilliseconds = milliseconds;
     }
 
+    private void startForegroundService() {
+//        Intent notificationIntent = new Intent(this, MainActivity.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+//
+////        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_service);
+//
+//        NotificationCompat.Builder builder;
+//        if (Build.VERSION.SDK_INT >= 26) {
+//            String CHANNEL_ID = "io.animal.mouse";
+//            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+//                    "io.animal.mouse Service Channel", NotificationManager.IMPORTANCE_DEFAULT);
+//
+//            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+//
+//            builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+//        } else {
+//            builder = new NotificationCompat.Builder(this);
+//        }
+//
+//        builder.setSmallIcon(R.drawable.ic_notification)
+//                .setContent(null)
+//                .setContentIntent(pendingIntent);
+
+        startForeground(1, new Notification());
+    }
+
     private void sendStartNotification(String text) {
         Log.d(TAG, "sendNotification(" + text + ")");
 
-        String channelId = "channel";
-        String channelName = "Channel Name";
+        String channelId = "io.animal";
+        String channelName = "mouse";
         int notifyId = 0;
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -164,7 +200,7 @@ public class CountDownService extends Service {
                 .setContentText(text)  // required
                 .setDefaults(Notification.BADGE_ICON_SMALL) // 알림, 사운드 진동 설정
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT) // not display in heads-up .
-//                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
                 .setSmallIcon(R.drawable.ic_notification)
 //                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification))
                 .setContentIntent(pendingIntent);
