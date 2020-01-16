@@ -8,9 +8,13 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 
-import io.animal.mouse.TimerStatus;
+import org.greenrobot.eventbus.EventBus;
 
-public class CountDownService extends Service implements IRemoteService {
+import io.animal.mouse.TimerStatus;
+import io.animal.mouse.events.CountdownFinishEvent;
+import io.animal.mouse.events.CountdownTickEvent;
+
+public class CountDownService extends Service {
 
     private final String TAG = "CountDownService";
 
@@ -68,13 +72,18 @@ public class CountDownService extends Service implements IRemoteService {
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.d(TAG, "onTick(" + millisUntilFinished + ")");
-                onCountdownTimerTick(millisUntilFinished);
+
+                remainMilliseconds = millisUntilFinished;
+                EventBus.getDefault().post(new CountdownTickEvent(remainMilliseconds));
             }
 
             @Override
             public void onFinish() {
                 Log.d(TAG, "onFinish()");
-                onCountdownFinish();
+
+                timerStatus = TimerStatus.STOP;
+                countDownTimer.cancel();
+                EventBus.getDefault().post(new CountdownFinishEvent());
 
                 alarmPlayer.playAlarmSound(getApplicationContext());
             }
@@ -95,37 +104,6 @@ public class CountDownService extends Service implements IRemoteService {
 
     public long getRemainMilliseconds() {
         return remainMilliseconds;
-    }
-
-    private void onCountdownTimerTick(long remainMilliseconds) {
-        this.remainMilliseconds = remainMilliseconds;
-
-        if (callback != null) {
-            callback.onTick(remainMilliseconds);
-        }
-    }
-
-    private void onCountdownFinish() {
-        timerStatus = TimerStatus.STOP;
-        countDownTimer.cancel();
-
-        if (callback != null) {
-            callback.onFinish();
-        }
-    }
-
-    private IRemoteServiceCallback callback;
-
-    @Override
-    public boolean registerCallback(IRemoteServiceCallback callback) {
-        this.callback = callback;
-        return true;
-    }
-
-    @Override
-    public boolean unregisterCallback(IRemoteServiceCallback callback) {
-        this.callback = null;
-        return true;
     }
 
 //    // TODO test notification

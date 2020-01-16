@@ -19,16 +19,21 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.animal.mouse.alarm.AlarmUtil;
+import io.animal.mouse.events.CountdownFinishEvent;
+import io.animal.mouse.events.CountdownTickEvent;
 import io.animal.mouse.service.CountDownService;
 import io.animal.mouse.service.CountDownServiceBinder;
-import io.animal.mouse.service.IRemoteServiceCallback;
 import io.animal.mouse.settings.SettingsActivity;
 import io.animal.mouse.views.PlayPauseView;
 import io.animal.mouse.views.ProgressPieView;
 import io.animal.mouse.views.SeekCircle;
 
-public class MainActivity extends AppCompatActivity implements IRemoteServiceCallback {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -141,14 +146,16 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
             Log.d(TAG, "about to call  : bindService");
             bindService(serviceIntent, serviceConnection, 0);
             Log.d(TAG, "has been called: bindService");
-
         }
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
         Log.d(TAG, "onStop()");
+        EventBus.getDefault().unregister(this);
+        super.onStop();
 
         unBindCountdownService();
     }
@@ -242,13 +249,11 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
         Log.d(TAG, "onServiceConnected(CountdownServiceBinder)");
 
         countDownService = binder.getCountdownService();
-        countDownService.registerCallback(this);
     }
 
     private void onServiceDisConnected() {
         Log.d(TAG, "onServiceDisConnected()");
 
-        countDownService.unregisterCallback(this);
         countDownService = null;
         serviceConnection = null;
     }
@@ -270,14 +275,6 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
 
     private boolean isServiceBound() {
         return countDownService != null;
-    }
-
-    private CountDownService getCountdownService() {
-        if (isServiceBound()) {
-            return countDownService;
-        } else {
-            throw new IllegalStateException("CountdownService is not bound to activity");
-        }
     }
 
     private void startCountDownService() {
@@ -318,18 +315,21 @@ public class MainActivity extends AppCompatActivity implements IRemoteServiceCal
         };
     }
 
-    @Override
-    public void onTick(final long milliseconds) {
-        Log.d(TAG, "onTick(" + milliseconds + ")");
+    @SuppressWarnings("noused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCountdownTickEvent(CountdownTickEvent e) {
+        Log.d(TAG, "onCountdownTickEvent(" + e.getMilliseconds() + ")");
+
+        final long milliseconds = e.getMilliseconds();
 
         updateUIMiniStopWatch(milliseconds);
-
         updateUIStopWatchPie(milliseconds);
     }
 
-    @Override
-    public void onFinish() {
-        Log.d(TAG, "onFinish()");
+    @SuppressWarnings("noused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCountdownFinishEvent(CountdownFinishEvent e) {
+        Log.d(TAG, "onCountdownFinishEvent()");
 
         updateUIMiniStopWatch(0);
 
