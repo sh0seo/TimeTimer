@@ -1,6 +1,7 @@
 package io.animal.mouse;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,6 +28,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import io.animal.mouse.alarm.AlarmUtil;
 import io.animal.mouse.events.CountdownFinishEvent;
 import io.animal.mouse.events.CountdownTickEvent;
+import io.animal.mouse.events.KeepScreenEvent;
 import io.animal.mouse.service.CountDownService;
 import io.animal.mouse.service.CountDownServiceBinder;
 import io.animal.mouse.settings.SettingsActivity;
@@ -63,6 +66,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+
+        // Set Lock Screen at SettingsFragment.
+//        boolean enableLockScreen = PreferenceManager.getDefaultSharedPreferences(this)
+//                .getBoolean("lock_screen", false);
+//        if (enableLockScreen) {
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        }
 
         // findViewBy ~
         stopWatchPie = findViewById(R.id.my_progress);
@@ -130,8 +140,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (countDownService.getState() == TimerStatus.STOP) {
                     countDownService.startCountdown(remainMilliseconds);
+
+                    // if options enable.
+                    enableKeepScreen();
                 } else if (countDownService.getState() == TimerStatus.START) {
                     countDownService.stopCountdown();
+
+                    disableKeepScreen();
                 }
 
                 playPauseController.toggle();
@@ -321,6 +336,8 @@ public class MainActivity extends AppCompatActivity {
                         playPauseController.toggleNotAnimation();
                     }
                 }
+
+                updateKeepLockScreen();
             }
 
             @Override
@@ -353,6 +370,40 @@ public class MainActivity extends AppCompatActivity {
         updateUIStopWatchPie(0);
 
         playPauseController.toggle();
+    }
+
+//    @SuppressWarnings("unused")
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void updateKeepLockScreen() {
+        Log.d(TAG, "updateKeepLockScreen()");
+
+        if (isServiceBound()) {
+            if (countDownService.getState() == TimerStatus.START) {
+                boolean enableLockScreen = PreferenceManager.getDefaultSharedPreferences(this)
+                        .getBoolean("lock_screen", false);
+                if (enableLockScreen) {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        }
+    }
+
+    /**
+     * Enable Keep Screen, if it enable options in Settings.
+     */
+    private void enableKeepScreen() {
+        boolean enableLockScreen = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("lock_screen", false);
+        if (enableLockScreen) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+    /**
+     * Disable Keep Screen.
+     */
+    private void disableKeepScreen() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void updateUIMiniStopWatch(long milliseconds) {
