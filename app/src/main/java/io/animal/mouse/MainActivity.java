@@ -28,7 +28,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import io.animal.mouse.alarm.AlarmUtil;
 import io.animal.mouse.events.CountdownFinishEvent;
 import io.animal.mouse.events.CountdownTickEvent;
-import io.animal.mouse.events.KeepScreenEvent;
 import io.animal.mouse.service.CountDownService;
 import io.animal.mouse.service.CountDownServiceBinder;
 import io.animal.mouse.settings.SettingsActivity;
@@ -384,6 +383,8 @@ public class MainActivity extends AppCompatActivity {
                 if (enableLockScreen) {
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 }
+            } else {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
     }
