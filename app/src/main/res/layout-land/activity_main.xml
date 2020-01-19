@@ -232,7 +232,7 @@
         android:layout_width="55dp"
         android:layout_height="match_parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:background="@drawable/border" />
+        android:background="@android:color/white" />
 
     <ImageButton
         android:id="@+id/more_menu"
