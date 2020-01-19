@@ -5,13 +5,11 @@ import androidx.preference.PreferenceManager;
 
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Chronometer;
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (countDownService.getState() == TimerStatus.START) {
+                if (countDownService.getState() == CountdownStatus.START) {
                     return;
                 }
 
@@ -139,12 +137,12 @@ public class MainActivity extends AppCompatActivity {
                     remainMilliseconds = startTime;
                 }
 
-                if (countDownService.getState() == TimerStatus.STOP) {
+                if (countDownService.getState() == CountdownStatus.STOP) {
                     countDownService.startCountdown(remainMilliseconds);
 
                     // if options enable.
                     enableKeepScreen();
-                } else if (countDownService.getState() == TimerStatus.START) {
+                } else if (countDownService.getState() == CountdownStatus.START) {
                     countDownService.stopCountdown();
 
                     disableKeepScreen();
@@ -174,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (isServiceBound()) {
-            if (countDownService.getState() == TimerStatus.START) {
+            if (countDownService.getState() == CountdownStatus.START) {
                 if (playPauseController.isPlaying()) {
                     playPauseController.toggleNotAnimation();
                 }
@@ -332,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 // Update UI.
                 updateUIMiniStopWatch(countDownService.getRemainMilliseconds());
                 updateUIStopWatchPie(countDownService.getRemainMilliseconds());
-                if (countDownService.getState() == TimerStatus.START) {
+                if (countDownService.getState() == CountdownStatus.START) {
                     if (playPauseController.isPlaying()) {
                         playPauseController.toggleNotAnimation();
                     }
@@ -379,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "updateKeepLockScreen()");
 
         if (isServiceBound()) {
-            if (countDownService.getState() == TimerStatus.START) {
+            if (countDownService.getState() == CountdownStatus.START) {
                 boolean enableLockScreen = PreferenceManager.getDefaultSharedPreferences(this)
                         .getBoolean("lock_screen", false);
                 if (enableLockScreen) {
