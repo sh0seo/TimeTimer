@@ -2,21 +2,19 @@ package io.animal.mouse.alarm;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 
 import io.animal.mouse.R;
 
-public class AlarmUtil {
+public class AlarmUtil extends ContextWrapper {
 
     // vibrate pattern.
-    private final long VIBRATE_PATTERN[] = {100, 100, 100, 100, 100};
+    private final long VIBRATE_PATTERN[] = {100, 100};
 
     // -1 is no repeat.
     private final int VIBRATE_REPEATS = 3;
@@ -26,13 +24,18 @@ public class AlarmUtil {
     private Vibrator vibrator;
     private MediaPlayer audioPlayer ;
 
-    public void playAlarm(Context context) {
-        pref = context.getSharedPreferences("pref", Activity.MODE_PRIVATE);
+    public AlarmUtil(Context base) {
+        super(base);
 
+
+        pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+    }
+
+    public void playAlarm() {
         if (pref.getBoolean("alarm_type", false)) {
-            playRingtone(context);
+            playRingtone();
         } else {
-            playVibrate(context);
+            playVibrate();
         }
     }
 
@@ -44,12 +47,26 @@ public class AlarmUtil {
         }
     }
 
-    public void playVibrate(Context context) {
-        if (context == null) {
+    public void pingVibrate() {
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator == null) {
             throw new NullPointerException();
         }
 
-        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(VIBRATE_PATTERN, VIBRATE_REPEATS);
+        }
+    }
+
+    public void pingRingtone() {
+        audioPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+        audioPlayer.start();
+    }
+
+    public void playVibrate() {
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         if (vibrator == null) {
             throw new NullPointerException();
         }
@@ -61,12 +78,8 @@ public class AlarmUtil {
         }
     }
 
-    public void playRingtone(Context context) {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-
-        audioPlayer = MediaPlayer.create(context, R.raw.beep);
+    public void playRingtone() {
+        audioPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beep);
         audioPlayer.start();
     }
 }

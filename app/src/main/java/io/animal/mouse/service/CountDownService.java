@@ -2,15 +2,10 @@ package io.animal.mouse.service;
 
 import android.app.Activity;
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioAttributes;
-import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -26,6 +21,7 @@ import io.animal.mouse.CountdownStatus;
 import io.animal.mouse.alarm.AlarmUtil;
 import io.animal.mouse.events.CountdownFinishEvent;
 import io.animal.mouse.events.CountdownTickEvent;
+import io.animal.mouse.notification.NotificationHelper;
 
 public class CountDownService extends Service {
 
@@ -38,6 +34,11 @@ public class CountDownService extends Service {
     private final static long VIBRATION_PATTERN[] = {-1};
     private final static int COUNTDOWN_TICK_INTERVAL = 500;
 
+    private final static int NOTI_START_ID1 = 1101;
+    private final static int NOTI_START_ID2 = 1102;
+    private final static int NOTI_END_ID1 = 1201;
+    private final static int NOTI_END_ID2 = 1202;
+
     private CountDownTimer countDownTimer;
     private IBinder countDownServiceBinder;
 
@@ -45,6 +46,9 @@ public class CountDownService extends Service {
     private long remainMilliseconds;
 
     private SharedPreferences pref;
+
+    private NotificationHelper notificationHelper;
+    private AlarmUtil alarmUtil;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -56,15 +60,13 @@ public class CountDownService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        notificationHelper = new NotificationHelper(this);
+
         startForegroundService();
 
-        pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        remainMilliseconds = getPreferences().getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
-        remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
-
-        remainMilliseconds = 5000;
-
-        int timerType = pref.getInt("timer_status", CountdownStatus.STOP.getType());
+        int timerType = getPreferences().getInt("timer_status", CountdownStatus.STOP.getType());
         if (timerType == CountdownStatus.STOP.getType()) {
             countdownStatus = CountdownStatus.STOP;
         } else if (timerType == CountdownStatus.START.getType()) {
@@ -72,13 +74,15 @@ public class CountDownService extends Service {
         }
 
         countDownServiceBinder = new CountDownServiceBinder(this);
+
+        alarmUtil = new AlarmUtil(this);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind(intent)");
 
-        remainMilliseconds = pref.getLong("remain_time", DEFAULT_MILLI_SECONDS);
+        remainMilliseconds = getPreferences().getLong("remain_time", DEFAULT_MILLI_SECONDS);
 
         return countDownServiceBinder;
     }
@@ -88,8 +92,8 @@ public class CountDownService extends Service {
         Log.d(TAG, "onDestroy()");
         super.onDestroy();
 
-        pref.edit().putLong("remain_time", remainMilliseconds).apply();
-        pref.edit().putInt("timer_status", countdownStatus.getType()).apply();
+        getPreferences().edit().putLong("remain_time", remainMilliseconds).apply();
+        getPreferences().edit().putInt("timer_status", countdownStatus.getType()).apply();
     }
 
     public void startCountdown(final long millis) {
@@ -153,168 +157,55 @@ public class CountDownService extends Service {
     }
 
     private void startForegroundService() {
+        final int CHANNEL_ID = 1001;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            String CHANNEL_ID = "10000";
-            String CHANNEL_NAME = "io.animal.mouse.root";
+            NotificationCompat.Builder builder = notificationHelper.getForegroundNotification();
 
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-
-            NotificationChannel channel = notificationManager.getNotificationChannel(CHANNEL_ID);
-            if (channel == null) {
-               channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
-               notificationManager.createNotificationChannel(channel);
-            }
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-            builder.setContentTitle(getString(R.string.app_name))
-                    .setContentText("");
-
-            startForeground(1, builder.build());
-
+            startForeground(CHANNEL_ID, builder.build());
         } else {
-            startForeground(1, new Notification());
+            startForeground(CHANNEL_ID, new Notification());
         }
     }
 
     private void sendStartNotification(String text) {
         Log.d(TAG, "sendNotification(" + text + ")");
 
-        String channelId = "10001";
-        String channelName = "io.animal.mouse.play";
-        int notifyId = 1;
+        NotificationCompat.Builder builder = notificationHelper.getStartNotification(
+                getResources().getString(R.string.app_name), text, getMainIntent());
+        notificationHelper.notify(NOTI_START_ID1, builder);
 
-        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
-            if (channel == null) {
-                channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
-                channel.setShowBadge(true);
-                channel.setSound(null, null);
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        int requestID = (int) System.currentTimeMillis();
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-        builder.setContentTitle(getString(R.string.app_name))
-                .setContentText(text)
-                .setDefaults(Notification.BADGE_ICON_SMALL)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentIntent(pendingIntent);
-
-        notificationManager.notify(notifyId, builder.build());
-
-        AlarmUtil alarmUtil = new AlarmUtil();
-        if (isAlarm()) {
-            alarmUtil.playRingtone(getApplication());
-        } else {
-            alarmUtil.playVibrate(getApplication());
-        }
+        alarmUtil.playAlarm();
     }
 
     private void sendFinishNotification(String text) {
         Log.d(TAG, "sendNotification(" + text + ")");
 
-        final String channelId = "10003";
-        final String channelName = "io.animal.mouse.stop";
-        final int notifyId = 1;
+        NotificationCompat.Builder builder = notificationHelper.getEndNotification(
+                getResources().getString(R.string.app_name), text, getMainIntent());
+        notificationHelper.notify(NOTI_END_ID1, builder);
 
-        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
-            if (channel == null) {
-                channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
-                channel.setSound(null, null);
-
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        int requestID = (int) System.currentTimeMillis();
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-        builder.setContentTitle(getResources().getString(R.string.app_name))
-                .setContentText(text)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent);
-
-        notificationManager.notify(notifyId, builder.build());
-
-        AlarmUtil alarmUtil = new AlarmUtil();
-        if (isAlarm()) {
-            alarmUtil.playRingtone(getApplication());
-        } else {
-            alarmUtil.playVibrate(getApplication());
-        }
+        alarmUtil.playAlarm();
     }
 
     private boolean isAlarm() {
         return pref.getBoolean("alarm_type", false);
     }
 
-//    private void sendFinishNotificationByRingtone(String text) {
-//        Log.d(TAG, "sendNotification(" + text + ")");
-//
-//        final String channelId = "10002";
-//        final String channelName = "io.animal.mouse.stop.ringtone";
-//        final int notifyId = 0;
-//
-//        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
-//            if (channel == null) {
-//                channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-//
-//                Uri soundUri = Uri.parse("android.resource://io.animal.mouse/" + R.raw.beep);
-//                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-////                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-//                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-//                        .build();
-//                channel.setSound(soundUri, audioAttributes);
-//                channel.setShowBadge(true);
-//
-//                notificationManager.createNotificationChannel(channel);
-//            }
-//        }
-//
-//        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//
-//        int requestID = (int) System.currentTimeMillis();
-//        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        Uri soundUri = Uri.parse("android.resource://io.animal.mouse/" + R.raw.beep);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-//        builder.setContentTitle(getResources().getString(R.string.app_name)) // required
-//                .setContentText(text)  // required
-//                .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
-//                .setSmallIcon(R.drawable.ic_notification)
-//                .setPriority(NotificationCompat.PRIORITY_LOW) // not display in heads-up .
-//                .setSound(soundUri)
-//                .setContentIntent(pendingIntent);
-//
-////        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-////                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-////                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-////                .build();
-//
-//        notificationManager.notify(notifyId, builder.build());
-//    }
+    private SharedPreferences getPreferences() {
+        if (pref == null) {
+            pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        }
+        return pref;
+    }
 
+    private PendingIntent getMainIntent() {
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
+        int requestID = (int) System.currentTimeMillis();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return pendingIntent;
+    }
 }

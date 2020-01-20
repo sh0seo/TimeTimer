@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         initializeSettingMenu();
 
         // Alarm & Vibrate Utility.
-        alarmUtil = new AlarmUtil();
+        alarmUtil = new AlarmUtil(this);
 
         stopWatch.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
             @Override
@@ -207,11 +207,11 @@ public class MainActivity extends AppCompatActivity {
             if (bAlarm) {
                 alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
                     // alert vibrate
-                alarmUtil.playVibrate(getApplicationContext());
+                alarmUtil.pingVibrate();
             } else {
                 alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
                     // alert ringtone
-                alarmUtil.playRingtone(getApplicationContext());
+                alarmUtil.pingRingtone();
             }
 
             SharedPreferences.Editor editor = pref.edit();
