@@ -1,6 +1,7 @@
 package io.animal.mouse;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.preference.PreferenceManager;
 
 import android.app.Activity;
@@ -13,8 +14,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Chronometer;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -26,6 +25,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import io.animal.mouse.alarm.AlarmUtil;
+import io.animal.mouse.databinding.ActivityMainBinding;
 import io.animal.mouse.events.CountdownFinishEvent;
 import io.animal.mouse.events.CountdownTickEvent;
 import io.animal.mouse.service.CountDownService;
@@ -44,11 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences pref;
 
     // UI Components
-    private ImageView alarmVibration;
     private ProgressPieView stopWatchPie;
     private SeekCircle stopWatch;
     private PlayPauseView playPauseController;
-    private ImageButton settingsMenu;
 
     // StopWatch Service
     private ServiceConnection serviceConnection;
@@ -61,18 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
     private AdView mAdView;
 
+    private ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         // findViewBy ~
         stopWatchPie = findViewById(R.id.my_progress);
         stopWatch = findViewById(R.id.my_seekbar);
         playPauseController = findViewById(R.id.play_pause_view);
-        alarmVibration = findViewById(R.id.alarm_vibration);
+//        alarmVibration = findViewById(R.id.alarm_vibration);
         miniStopWatch = findViewById(R.id.stop_watch);
-        settingsMenu = findViewById(R.id.more_menu);
 
         initializeAdMob();
 
@@ -221,21 +221,21 @@ public class MainActivity extends AppCompatActivity {
     private void initializeAlarmVibration() {
         boolean isAlarm = getPref().getBoolean("alarm_type", true);
         if (isAlarm) {
-            alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
+            binding.alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
         } else {
-            alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
+            binding.alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
         }
 
-        alarmVibration.setOnClickListener(v -> {
+        binding.alarmVibration.setOnClickListener(v -> {
             boolean bAlarm = getPref().getBoolean("alarm_type", true);
             if (bAlarm) {
-                alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
+                binding.alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
                     // alert vibrate
                 alarmUtil.pingVibrate();
             } else {
-                alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
+                binding.alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
                     // alert ringtone
-//                alarmUtil.pingRingtone();
+                alarmUtil.pingRingtone();
             }
 
             SharedPreferences.Editor editor = getPref().edit();
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
      * Setting Menu Event
      */
     private void initializeSettingMenu() {
-        settingsMenu.setOnClickListener(v -> {
+        binding.moreMenu.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
         });
@@ -451,10 +451,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUIStopWatchPie(long milliseconds) {
-        Log.d(TAG, "updateUIStopWatchPie(" + milliseconds + ")");
-
         float t = MAX_TIMER_MILLISECONDS - milliseconds;
         float temp = t / MAX_TIMER_MILLISECONDS * 100;
+
+        Log.d(TAG, "updateUIStopWatchPie(" + milliseconds + ") percent: " + temp);
+
         stopWatchPie.setPercent(temp);
     }
 
