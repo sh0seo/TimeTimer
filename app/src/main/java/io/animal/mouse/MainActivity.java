@@ -59,30 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
     private AlarmUtil alarmUtil;
 
+    private AdView mAdView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
-
-        // Set Lock Screen at SettingsFragment.
-//        boolean enableLockScreen = PreferenceManager.getDefaultSharedPreferences(this)
-//                .getBoolean("lock_screen", false);
-//        if (enableLockScreen) {
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        }
-
         // findViewBy ~
         stopWatchPie = findViewById(R.id.my_progress);
         stopWatch = findViewById(R.id.my_seekbar);
         playPauseController = findViewById(R.id.play_pause_view);
-
         alarmVibration = findViewById(R.id.alarm_vibration);
         miniStopWatch = findViewById(R.id.stop_watch);
-
         settingsMenu = findViewById(R.id.more_menu);
-
 
         initializeAdMob();
 
@@ -129,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             long startTime = (3600 - stopWatchProgress) * 1000;
 
             Log.d(TAG, "StartTime: " + startTime + " ms PiePercent: " + stopWatchPiePercent + " Progress: " + stopWatchProgress);
-            pref.edit().putLong("startTime", startTime).apply();
+            getPref().edit().putLong("startTime", startTime).apply();
 
             if (isServiceBound()) {
                 long remainMilliseconds = countDownService.getRemainMilliseconds();
@@ -185,12 +175,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        if (mAdView != null) {
+            mAdView.resume();
+        }
+        super.onResume();
+    }
+
+    @Override
     protected void onStop() {
         Log.d(TAG, "onStop()");
         EventBus.getDefault().unregister(this);
         super.onStop();
 
         unBindCountdownService();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
     }
 
     @Override
@@ -201,11 +207,19 @@ public class MainActivity extends AppCompatActivity {
         receiveExtraIntent(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
+    }
+
     /**
      * Alarm & Vibration Button
      */
     private void initializeAlarmVibration() {
-        boolean isAlarm = pref.getBoolean("alarm_type", true);
+        boolean isAlarm = getPref().getBoolean("alarm_type", true);
         if (isAlarm) {
             alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
         } else {
@@ -213,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         alarmVibration.setOnClickListener(v -> {
-            boolean bAlarm = pref.getBoolean("alarm_type", true);
+            boolean bAlarm = getPref().getBoolean("alarm_type", true);
             if (bAlarm) {
                 alarmVibration.setImageResource(R.drawable.ic_notifications_off_24px);
                     // alert vibrate
@@ -224,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 //                alarmUtil.pingRingtone();
             }
 
-            SharedPreferences.Editor editor = pref.edit();
+            SharedPreferences.Editor editor = getPref().edit();
             editor.putBoolean("alarm_type", !bAlarm);
             editor.apply();
         });
@@ -237,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         MobileAds.initialize(this, s -> {});
 
         // AdMob View.
-        AdView mAdView = findViewById(R.id.adView);
+        mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
@@ -332,10 +346,11 @@ public class MainActivity extends AppCompatActivity {
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName className, IBinder service) {
-                Log.d(TAG, "ServiceConnection#onServiceConnected()");
 
                 CountDownServiceBinder binder = (CountDownServiceBinder) service;
                 onServiceConnectedBinder(binder);
+
+                Log.d(TAG, "onServiceConnected() getRemainMilliseconds(): " + countDownService.getRemainMilliseconds());
 
                 // Update UI.
                 updateUIMiniStopWatch(countDownService.getRemainMilliseconds());
@@ -454,5 +469,12 @@ public class MainActivity extends AppCompatActivity {
 
             playPauseController.callOnClick();
         }
+    }
+
+    private SharedPreferences getPref() {
+        if (pref == null) {
+            pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        }
+        return pref;
     }
 }

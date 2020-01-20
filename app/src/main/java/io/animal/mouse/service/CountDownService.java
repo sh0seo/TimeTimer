@@ -121,6 +121,7 @@ public class CountDownService extends Service {
                 countdownStatus = CountdownStatus.STOP;
                 try {
                     countDownTimer.cancel();
+                    remainMilliseconds = 0;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "" + e.getLocalizedMessage());
                 }
