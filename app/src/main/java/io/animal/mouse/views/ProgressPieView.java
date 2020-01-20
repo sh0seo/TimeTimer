@@ -45,9 +45,11 @@ public class ProgressPieView extends View {
 
     private void init() {
         bgPaint = new Paint();
+        bgPaint.setAntiAlias(true);
         bgPaint.setColor(bgColor);
 
         fgPaint = new Paint();
+        fgPaint.setAntiAlias(true);
         fgPaint.setColor(fgColor);
     }
 
@@ -125,10 +127,11 @@ public class ProgressPieView extends View {
         animateIndeterminate(800, new AccelerateDecelerateInterpolator());
     }
 
-    public void animateIndeterminate(int durationOneCircle,
-                                     TimeInterpolator interpolator) {
+    public void animateIndeterminate(int durationOneCircle, TimeInterpolator interpolator) {
         animator = ObjectAnimator.ofFloat(this, "startAngle", getStartAngle(), getStartAngle() + 360);
-        if (interpolator != null) animator.setInterpolator(interpolator);
+        if (interpolator != null) {
+            animator.setInterpolator(interpolator);
+        }
         animator.setDuration(durationOneCircle);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setRepeatMode(ValueAnimator.RESTART);
