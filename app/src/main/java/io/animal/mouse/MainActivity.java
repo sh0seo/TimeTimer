@@ -151,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
                 playPauseController.toggle();
             }
         });
+
+        receiveExtraIntent(getIntent());
     }
 
     @Override
@@ -191,6 +193,14 @@ public class MainActivity extends AppCompatActivity {
         unBindCountdownService();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "onNewIntent()");
+
+        receiveExtraIntent(intent);
+    }
+
     /**
      * Alarm & Vibration Button
      */
@@ -211,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 alarmVibration.setImageResource(R.drawable.ic_notifications_24px);
                     // alert ringtone
-                alarmUtil.pingRingtone();
+//                alarmUtil.pingRingtone();
             }
 
             SharedPreferences.Editor editor = pref.edit();
@@ -431,5 +441,18 @@ public class MainActivity extends AppCompatActivity {
         float t = MAX_TIMER_MILLISECONDS - milliseconds;
         float temp = t / MAX_TIMER_MILLISECONDS * 100;
         stopWatchPie.setPercent(temp);
+    }
+
+    private void receiveExtraIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        String value = intent.getStringExtra("event_alarm");
+        if (value != null) {
+            Log.d(TAG, "event_alarm: "+ value);
+
+            playPauseController.callOnClick();
+        }
     }
 }

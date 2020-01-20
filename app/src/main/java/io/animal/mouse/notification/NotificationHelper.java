@@ -1,6 +1,5 @@
 package io.animal.mouse.notification;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -50,13 +49,19 @@ public class NotificationHelper extends ContextWrapper {
         }
     }
 
+    /**
+     * Get a notification for foreground
+     *
+     * @return the builder
+     */
     public NotificationCompat.Builder getForegroundNotification() {
         return new NotificationCompat.Builder(getApplicationContext(), ROOT_CHANNEL_ID)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText("");
     }
+
     /**
-     * Get a notification of type 1
+     * Get a notification of type countdown start.
      *
      * Provide the builder rather than the notification it's self as useful for making notification
      * changes.
@@ -75,18 +80,19 @@ public class NotificationHelper extends ContextWrapper {
     }
 
     /**
-     * Build notification for secondary channel.
+     * Build notification for countdown end.
      *
      * @param title Title for notification.
      * @param body Message for notification.
      * @return A Notification.Builder configured with the selected channel and details
      */
-    public NotificationCompat.Builder getEndNotification(String title, String body, PendingIntent intent) {
+    public NotificationCompat.Builder getEndNotification(String title, String body, PendingIntent intent, PendingIntent stopIntent) {
         return new NotificationCompat.Builder(getApplicationContext(), END_CHANNEL)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(getSmallIcon())
                 .setContentIntent((intent))
+                .addAction(R.drawable.ic_alarm_active_24px, "Stop", stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
     }

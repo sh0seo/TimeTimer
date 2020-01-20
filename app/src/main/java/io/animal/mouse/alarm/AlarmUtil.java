@@ -26,13 +26,10 @@ public class AlarmUtil extends ContextWrapper {
 
     public AlarmUtil(Context base) {
         super(base);
-
-
-        pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
     }
 
     public void playAlarm() {
-        if (pref.getBoolean("alarm_type", false)) {
+        if (getPref().getBoolean("alarm_type", false)) {
             playRingtone();
         } else {
             playVibrate();
@@ -40,46 +37,65 @@ public class AlarmUtil extends ContextWrapper {
     }
 
     public void stopAlarm() {
-        if (pref.getBoolean("alarm_type", false)) {
-            audioPlayer.stop();
+        if (getPref().getBoolean("alarm_type", false)) {
+            getMediaPlayer().stop();
         } else {
-            vibrator.cancel();
+            getVibrator().cancel();
         }
     }
 
     public void pingVibrate() {
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibrator == null) {
-            throw new NullPointerException();
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+            getVibrator().vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            vibrator.vibrate(VIBRATE_PATTERN, VIBRATE_REPEATS);
+            getVibrator().vibrate(VIBRATE_PATTERN, VIBRATE_REPEATS);
         }
     }
 
     public void pingRingtone() {
-        audioPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beep);
-        audioPlayer.start();
+        getMediaPlayer().start();
     }
 
     public void playVibrate() {
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibrator == null) {
-            throw new NullPointerException();
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(1500, VibrationEffect.DEFAULT_AMPLITUDE));
+            getVibrator().vibrate(VibrationEffect.createOneShot(1500, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            vibrator.vibrate(VIBRATE_PATTERN, VIBRATE_REPEATS);
+            getVibrator().vibrate(VIBRATE_PATTERN, VIBRATE_REPEATS);
         }
     }
 
     public void playRingtone() {
-        audioPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beep);
-        audioPlayer.start();
+        getMediaPlayer().start();
+    }
+
+    /**
+     * Get Shared Preference.
+     *
+     * @return preference of private mode.
+     */
+    private SharedPreferences getPref() {
+        if (pref == null) {
+            pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        }
+        return pref;
+    }
+
+    /**
+     * Get vibrator service.
+     *
+     * @return vibrator service.
+     */
+    private Vibrator getVibrator() {
+        if (vibrator == null) {
+            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        }
+        return vibrator;
+    }
+
+    private MediaPlayer getMediaPlayer() {
+        if (audioPlayer == null) {
+            audioPlayer = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+        }
+        return audioPlayer;
     }
 }

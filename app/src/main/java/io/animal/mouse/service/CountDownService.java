@@ -182,7 +182,7 @@ public class CountDownService extends Service {
         Log.d(TAG, "sendNotification(" + text + ")");
 
         NotificationCompat.Builder builder = notificationHelper.getEndNotification(
-                getResources().getString(R.string.app_name), text, getMainIntent());
+                getResources().getString(R.string.app_name), text, getMainIntent(), getStopIntent());
         notificationHelper.notify(NOTI_END_ID1, builder);
 
         alarmUtil.playAlarm();
@@ -202,9 +202,21 @@ public class CountDownService extends Service {
     private PendingIntent getMainIntent() {
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.putExtra("event_alarm","end");
 
         int requestID = (int) System.currentTimeMillis();
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return pendingIntent;
+    }
+
+    private PendingIntent getStopIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("event_alarm","end");
+
+        int requestID = (int) System.currentTimeMillis();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return pendingIntent;
     }
