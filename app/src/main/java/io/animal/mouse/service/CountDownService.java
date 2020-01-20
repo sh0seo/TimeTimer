@@ -101,9 +101,7 @@ public class CountDownService extends Service {
 
         countdownStatus = CountdownStatus.START;
 
-        sendFinishNotification("New Start Countdown");
-
-//        sendStartNotification("Start Countdown");
+        sendStartNotification(getString(R.string.time_start));
 
         countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVAL) {
             @Override
@@ -128,7 +126,7 @@ public class CountDownService extends Service {
 
                 EventBus.getDefault().post(new CountdownFinishEvent());
 
-//                sendFinishNotification("End Countdown");
+                sendFinishNotification(getString(R.string.time_up));
             }
         }.start();
     }
@@ -172,11 +170,11 @@ public class CountDownService extends Service {
     private void sendStartNotification(String text) {
         Log.d(TAG, "sendNotification(" + text + ")");
 
+//        notificationHelper.deleteEndNotification(NOTI_END_ID1); // delete remain end'notification
+
         NotificationCompat.Builder builder = notificationHelper.getStartNotification(
                 getResources().getString(R.string.app_name), text, getMainIntent());
         notificationHelper.notify(NOTI_START_ID1, builder);
-
-        alarmUtil.playAlarm();
     }
 
     private void sendFinishNotification(String text) {
@@ -185,6 +183,8 @@ public class CountDownService extends Service {
         NotificationCompat.Builder builder = notificationHelper.getEndNotification(
                 getResources().getString(R.string.app_name), text, getMainIntent(), getStopIntent());
         notificationHelper.notify(NOTI_END_ID1, builder);
+
+//        notificationHelper.deleteStartNotification(NOTI_END_ID1);
 
         alarmUtil.playAlarm();
     }

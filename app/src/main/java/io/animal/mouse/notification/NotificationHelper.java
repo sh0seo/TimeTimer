@@ -19,10 +19,10 @@ public class NotificationHelper extends ContextWrapper {
     public static final String ROOT_CHANNEL_ID = "io.animal.mouse.root";
     public static final String ROOT_CHANNEL = "io.animal.mouse.root";
 
-    public static final String START_CHANNEL_ID = "io.animal.mouse.start";
+    public static final String START_CHANNEL_ID = "1101";
     public static final String START_CHANNEL = "io.animal.mouse.start";
 
-    public static final String END_CHANNEL_ID = "io.animal.mouse.end";
+    public static final String END_CHANNEL_ID = "1201";
     public static final String END_CHANNEL = "io.animal.mouse.end";
 
     private NotificationManager manager;
@@ -79,6 +79,14 @@ public class NotificationHelper extends ContextWrapper {
                 .setContentIntent(intent);
     }
 
+    public void deleteStartNotification(int channelId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getManager().deleteNotificationChannel(START_CHANNEL_ID);
+        } else {
+            getManager().cancel(channelId);
+        }
+    }
+
     /**
      * Build notification for countdown end.
      *
@@ -92,9 +100,17 @@ public class NotificationHelper extends ContextWrapper {
                 .setContentText(body)
                 .setSmallIcon(getSmallIcon())
                 .setContentIntent((intent))
-                .addAction(R.drawable.ic_alarm_active_24px, "Stop", stopIntent)
+                .addAction(getSmallIcon(), "Stop", stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
+    }
+
+    public void deleteEndNotification(int channelId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getManager().deleteNotificationChannel(END_CHANNEL_ID);
+        } else {
+            getManager().cancel(channelId);
+        }
     }
 
     /**
