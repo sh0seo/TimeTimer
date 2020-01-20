@@ -32,6 +32,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0-alpha04'
     implementation 'com.google.android.gms:play-services-ads:18.3.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'de.psdev.licensesdialog:licensesdialog:2.1.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'

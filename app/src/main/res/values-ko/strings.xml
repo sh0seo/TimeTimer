@@ -19,4 +19,6 @@
     <string name="ringtone_volume">ringtone_volume</string>
     <string name="vibration">vibration</string>
     <string name="open_sources">open_sources</string>
+
+    <string name="time_up">시간 종료</string>
 </resources>
