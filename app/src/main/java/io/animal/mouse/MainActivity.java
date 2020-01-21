@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Chronometer;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -31,29 +30,20 @@ import io.animal.mouse.events.CountdownTickEvent;
 import io.animal.mouse.service.CountDownService;
 import io.animal.mouse.service.CountDownServiceBinder;
 import io.animal.mouse.settings.SettingsActivity;
-import io.animal.mouse.views.PlayPauseView;
-import io.animal.mouse.views.ProgressPieView;
 import io.animal.mouse.views.SeekCircle;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private final long MAX_TIMER_MILLISECONDS = 3600 * 1000;
 
     private SharedPreferences pref;
 
-    // UI Components
-    private ProgressPieView stopWatchPie;
-    private SeekCircle stopWatch;
-    private PlayPauseView playPauseController;
-
     // StopWatch Service
     private ServiceConnection serviceConnection;
     private CountDownService countDownService;
     private Intent serviceIntent;
-
-    private Chronometer miniStopWatch;
 
     private AlarmUtil alarmUtil;
 
@@ -67,13 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        // findViewBy ~
-        stopWatchPie = findViewById(R.id.my_progress);
-        stopWatch = findViewById(R.id.my_seekbar);
-        playPauseController = findViewById(R.id.play_pause_view);
-//        alarmVibration = findViewById(R.id.alarm_vibration);
-        miniStopWatch = findViewById(R.id.stop_watch);
-
         initializeAdMob();
 
         initializeAlarmVibration();
@@ -83,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         // Alarm & Vibrate Utility.
         alarmUtil = new AlarmUtil(this);
 
-        stopWatch.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
+        binding.mySeekbar.setOnSeekCircleChangeListener(new SeekCircle.OnSeekCircleChangeListener() {
             @Override
             public void onProgressChanged(SeekCircle seekCircle, int progress, boolean fromUser) {
                 Log.d(TAG,"[onProgressChanged()] Progress: " + progress);
@@ -112,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        playPauseController.setOnClickListener(v -> {
-            float stopWatchPiePercent = stopWatchPie.getPercent();
-            int stopWatchProgress = stopWatch.getProgress();
+        binding.playPauseView.setOnClickListener(v -> {
+            float stopWatchPiePercent = binding.myProgress.getPercent();
+            int stopWatchProgress = binding.mySeekbar.getProgress();
 
             long startTime = (3600 - stopWatchProgress) * 1000;
 
@@ -138,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     disableKeepScreen();
                 }
 
-                playPauseController.toggle();
+                binding.playPauseView.toggle();
             }
         });
 
@@ -165,8 +148,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (isServiceBound()) {
             if (countDownService.getState() == CountdownStatus.START) {
-                if (playPauseController.isPlaying()) {
-                    playPauseController.toggleNotAnimation();
+                if (binding.playPauseView.isPlaying()) {
+                    binding.playPauseView.toggleNotAnimation();
                 }
             }
         }
@@ -356,8 +339,8 @@ public class MainActivity extends AppCompatActivity {
                 updateUIMiniStopWatch(countDownService.getRemainMilliseconds());
                 updateUIStopWatchPie(countDownService.getRemainMilliseconds());
                 if (countDownService.getState() == CountdownStatus.START) {
-                    if (playPauseController.isPlaying()) {
-                        playPauseController.toggleNotAnimation();
+                    if (binding.playPauseView.isPlaying()) {
+                        binding.playPauseView.toggleNotAnimation();
                     }
                 }
 
@@ -393,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
 
         updateUIStopWatchPie(0);
 
-        playPauseController.toggle();
+        binding.playPauseView.toggle();
     }
 
 //    @SuppressWarnings("unused")
@@ -447,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
         if (seconds < 10) secondsD = "0" + seconds;
         if (minutes < 10) minutesD = "0" + minutes;
 
-        miniStopWatch.setText(String.format("%s:%s", minutesD, secondsD));
+        binding.stopWatch.setText(String.format("%s:%s", minutesD, secondsD));
     }
 
     private void updateUIStopWatchPie(long milliseconds) {
@@ -456,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "updateUIStopWatchPie(" + milliseconds + ") percent: " + temp);
 
-        stopWatchPie.setPercent(temp);
+        binding.myProgress.setPercent(temp);
     }
 
     private void receiveExtraIntent(Intent intent) {
@@ -468,10 +451,24 @@ public class MainActivity extends AppCompatActivity {
         if (value != null) {
             Log.d(TAG, "event_alarm: "+ value);
 
-            playPauseController.callOnClick();
+            if (isServiceBound()) {
+                countDownService.setRemainMilliseconds(0);
+
+                if (countDownService.getState() == CountdownStatus.START) {
+                    countDownService.stopCountdown();
+
+                    disableKeepScreen();
+                    binding.playPauseView.toggle();
+                }
+            }
         }
     }
 
+    /**
+     * Get preference.
+     *
+     * @return shared preference.
+     */
     private SharedPreferences getPref() {
         if (pref == null) {
             pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
