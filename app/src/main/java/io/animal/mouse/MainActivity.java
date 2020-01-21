@@ -34,7 +34,7 @@ import io.animal.mouse.views.SeekCircle;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private final long MAX_TIMER_MILLISECONDS = 3600 * 1000;
 
@@ -458,13 +458,17 @@ public class MainActivity extends AppCompatActivity {
                     countDownService.stopCountdown();
 
                     disableKeepScreen();
-
                     binding.playPauseView.toggle();
                 }
             }
         }
     }
 
+    /**
+     * Get preference.
+     *
+     * @return shared preference.
+     */
     private SharedPreferences getPref() {
         if (pref == null) {
             pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
