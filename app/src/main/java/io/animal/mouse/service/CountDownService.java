@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -25,7 +26,7 @@ import io.animal.mouse.notification.NotificationHelper;
 
 public class CountDownService extends Service {
 
-    private final String TAG = "CountDownService";
+    private final String TAG = CountDownService.class.getSimpleName();
 
     private final int MAX_SECONDS = 3600;
     private final int ONE_SECONDS = 1000;
@@ -34,10 +35,8 @@ public class CountDownService extends Service {
     private final static long VIBRATION_PATTERN[] = {-1};
     private final static int COUNTDOWN_TICK_INTERVAL = 500;
 
-    private final static int NOTI_START_ID1 = 1101;
-    private final static int NOTI_START_ID2 = 1102;
-    private final static int NOTI_END_ID1 = 1201;
-    private final static int NOTI_END_ID2 = 1202;
+    private final static int NOTI_START_ID = 1101;
+    private final static int NOTI_END_ID = 1201;
 
     private CountDownTimer countDownTimer;
     private IBinder countDownServiceBinder;
@@ -101,9 +100,7 @@ public class CountDownService extends Service {
 
         countdownStatus = CountdownStatus.START;
 
-        sendFinishNotification("New Start Countdown");
-
-//        sendStartNotification("Start Countdown");
+        sendStartNotification(getString(R.string.time_start));
 
         countDownTimer = new CountDownTimer(millis, COUNTDOWN_TICK_INTERVAL) {
             @Override
@@ -128,7 +125,7 @@ public class CountDownService extends Service {
 
                 EventBus.getDefault().post(new CountdownFinishEvent());
 
-//                sendFinishNotification("End Countdown");
+                sendFinishNotification(getString(R.string.time_up));
             }
         }.start();
     }
@@ -170,23 +167,28 @@ public class CountDownService extends Service {
     }
 
     private void sendStartNotification(String text) {
-        Log.d(TAG, "sendNotification(" + text + ")");
+        Log.d(TAG, "sendStartNotification(" + text + ")");
 
         NotificationCompat.Builder builder = notificationHelper.getStartNotification(
                 getResources().getString(R.string.app_name), text, getMainIntent());
-        notificationHelper.notify(NOTI_START_ID1, builder);
-
-        alarmUtil.playAlarm();
+        notificationHelper.notify(NOTI_START_ID, builder);
     }
 
     private void sendFinishNotification(String text) {
-        Log.d(TAG, "sendNotification(" + text + ")");
+        Log.d(TAG, "sendFinishNotification(" + text + ")");
+
+        notificationHelper.cancel(NOTI_START_ID);
 
         NotificationCompat.Builder builder = notificationHelper.getEndNotification(
                 getResources().getString(R.string.app_name), text, getMainIntent(), getStopIntent());
-        notificationHelper.notify(NOTI_END_ID1, builder);
+        notificationHelper.notify(NOTI_END_ID, builder);
 
         alarmUtil.playAlarm();
+
+        // remove notification in status bar
+        new Handler().postDelayed(() -> {
+            notificationHelper.cancel(NOTI_END_ID);
+        }, 2000);
     }
 
     private boolean isAlarm() {

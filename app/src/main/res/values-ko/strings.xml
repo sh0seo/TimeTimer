@@ -20,5 +20,8 @@
     <string name="vibration">vibration</string>
     <string name="open_sources">open_sources</string>
 
-    <string name="time_up">시간 종료</string>
+    <string name="time_start">타이머 시작</string>
+    <string name="time_up">타이머 종료</string>
+
+    <string name="end_notification_name">중지</string>
 </resources>

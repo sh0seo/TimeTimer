@@ -43,7 +43,6 @@ public class NotificationHelper extends ContextWrapper {
 
             NotificationChannel chan2 = new NotificationChannel(END_CHANNEL_ID,
                     END_CHANNEL, NotificationManager.IMPORTANCE_HIGH);
-            chan2.setShowBadge(true);
             chan2.setSound(null, null);
             getManager().createNotificationChannel(chan2);
         }
@@ -92,7 +91,7 @@ public class NotificationHelper extends ContextWrapper {
                 .setContentText(body)
                 .setSmallIcon(getSmallIcon())
                 .setContentIntent((intent))
-                .addAction(R.drawable.ic_alarm_active_24px, "Stop", stopIntent)
+                .addAction(R.drawable.ic_alarm_active_24px, getString(R.string.end_notification_name), stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
     }
@@ -105,6 +104,15 @@ public class NotificationHelper extends ContextWrapper {
      */
     public void notify(int id, NotificationCompat.Builder notification) {
         getManager().notify(id, notification.build());
+    }
+
+    /**
+     * Request Canceling notification.
+     *
+     * @param id Notification Id for cancel
+     */
+    public void cancel(int id) {
+        getManager().cancel(id);
     }
 
     /**

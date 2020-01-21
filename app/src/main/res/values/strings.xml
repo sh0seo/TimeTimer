@@ -20,5 +20,8 @@
     <string name="vibration">vibration</string>
     <string name="open_sources">open_sources</string>
 
+    <string name="time_start">time\'s start</string>
     <string name="time_up">time\'s up</string>
+
+    <string name="end_notification_name">Stop</string>
 </resources>
