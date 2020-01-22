@@ -2,7 +2,6 @@ package io.animal.mouse.settings;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -34,7 +33,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             break;
 
             default:
-                Toast.makeText(getContext(), key, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onPreferenceTreeClick(). Key: " + key);
         }
         return temp;
