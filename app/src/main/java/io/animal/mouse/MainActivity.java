@@ -102,13 +102,13 @@ public class MainActivity extends AppCompatActivity {
             long startTime = (3600 - stopWatchProgress) * 1000;
 
             Log.d(TAG, "StartTime: " + startTime + " ms PiePercent: " + stopWatchPiePercent + " Progress: " + stopWatchProgress);
-            getPref().edit().putLong("startTime", startTime).apply();
+//            getPref().edit().putLong("startTime", startTime).apply();
 
             if (isServiceBound()) {
                 long remainMilliseconds = countDownService.getRemainMilliseconds();
-                if (remainMilliseconds == 0) {
-                    remainMilliseconds = startTime;
-                }
+//                if (remainMilliseconds == 0) {
+//                    remainMilliseconds = startTime;
+//                }
 
                 if (countDownService.getState() == CountdownStatus.STOP) {
                     countDownService.startCountdown(remainMilliseconds);
@@ -338,8 +338,13 @@ public class MainActivity extends AppCompatActivity {
                 // Update UI.
                 updateUIMiniStopWatch(countDownService.getRemainMilliseconds());
                 updateUIStopWatchPie(countDownService.getRemainMilliseconds());
+
                 if (countDownService.getState() == CountdownStatus.START) {
                     if (binding.playPauseView.isPlaying()) {
+                        binding.playPauseView.toggleNotAnimation();
+                    }
+                } else if (countDownService.getState() == CountdownStatus.STOP){
+                    if (!binding.playPauseView.isPlaying()) {
                         binding.playPauseView.toggleNotAnimation();
                     }
                 }

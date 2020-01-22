@@ -30,8 +30,7 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:theme="@style/AppThemeActionBar" />
-        <!-- AdMob App ID: ca-app-pub-2571675041295621~9673210191 -->
-        <!-- AdMob App Test ID: ca-app-pub-3940256099942544/6300978111 -->
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/admob_app_id" />

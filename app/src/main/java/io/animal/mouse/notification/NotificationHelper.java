@@ -70,7 +70,7 @@ public class NotificationHelper extends ContextWrapper {
      * @return the builder as it keeps a reference to the notification (since API 24)
      */
     public NotificationCompat.Builder getStartNotification(String title, String body, PendingIntent intent) {
-        return new NotificationCompat.Builder(getApplicationContext(), START_CHANNEL)
+        return new NotificationCompat.Builder(getApplicationContext(), START_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(getSmallIcon())
@@ -94,12 +94,12 @@ public class NotificationHelper extends ContextWrapper {
      * @return A Notification.Builder configured with the selected channel and details
      */
     public NotificationCompat.Builder getEndNotification(String title, String body, PendingIntent intent, PendingIntent stopIntent) {
-        return new NotificationCompat.Builder(getApplicationContext(), END_CHANNEL)
+        return new NotificationCompat.Builder(getApplicationContext(), END_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(getSmallIcon())
                 .setContentIntent((intent))
-                .addAction(R.drawable.ic_alarm_active_24px, getString(R.string.end_notification_name), stopIntent)
+                .addAction(getSmallIcon(), getString(R.string.end_notification_name), stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
     }

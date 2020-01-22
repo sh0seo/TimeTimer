@@ -115,9 +115,10 @@ public class CountDownService extends Service {
                 Log.d(TAG, "onFinish()");
 
                 countdownStatus = CountdownStatus.STOP;
+                remainMilliseconds = 0;
+
                 try {
                     countDownTimer.cancel();
-                    remainMilliseconds = 0;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "" + e.getLocalizedMessage());
                 }
@@ -168,8 +169,6 @@ public class CountDownService extends Service {
     private void sendStartNotification(String text) {
         Log.d(TAG, "sendStartNotification(" + text + ")");
 
-//        notificationHelper.deleteEndNotification(NOTI_END_ID1); // delete remain end'notification
-
         NotificationCompat.Builder builder = notificationHelper.getStartNotification(
                 getResources().getString(R.string.app_name), text, getMainIntent());
         notificationHelper.notify(NOTI_START_ID, builder);
@@ -184,14 +183,12 @@ public class CountDownService extends Service {
                 getResources().getString(R.string.app_name), text, getMainIntent(), getStopIntent());
         notificationHelper.notify(NOTI_END_ID, builder);
 
-//        notificationHelper.deleteStartNotification(NOTI_END_ID1);
-
         alarmUtil.playAlarm();
 
         // remove notification in status bar
         new Handler().postDelayed(() -> {
             notificationHelper.cancel(NOTI_END_ID);
-        }, 2000);
+        }, 3000);
     }
 
     private boolean isAlarm() {
