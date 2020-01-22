@@ -435,6 +435,10 @@ public class MainActivity extends AppCompatActivity {
         if (seconds < 10) secondsD = "0" + seconds;
         if (minutes < 10) minutesD = "0" + minutes;
 
+        if (minutesD.equals("00") && secondsD.equals("00")) {
+            minutesD = "60";
+        }
+
         binding.stopWatch.setText(String.format("%s:%s", minutesD, secondsD));
     }
 
